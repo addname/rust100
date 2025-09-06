@@ -1,4 +1,4 @@
-site_name: My Docs
+site_name: Rust 100 问
 nav:
   - Home: index.md
   - '第一章：入门与基础': 'chapter1_basics.md'

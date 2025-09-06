@@ -1,17 +1,22 @@
-# Welcome to MkDocs
+# 欢迎来到《Rust 100 问》
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+你好，欢迎来到《Rust 100 问》！
 
-## Commands
+本书旨在通过一系列精心设计的问答，帮助你系统地学习和掌握 Rust 程序设计语言。无论你是编程新手，还是有经验的开发者希望学习一门新的语言，这里都能为你提供清晰、准确且符合官方文档风格的指导。
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+## 本书结构
 
-## Project layout
+全书共分为六个章节，循序渐진地覆盖了从入门到高级的各个主题：
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+- **第一章：入门与基础**
+- **第二章：核心概念：所有权与生命周期**
+- **第三章：复合类型与集合**
+- **第四章：高级特性**
+- **第五章：并发与异步**
+- **第六章：项目与生态**
+
+你可以通过左侧的导航栏选择你感兴趣的章节开始学习。
+
+---
+
+祝你学习愉快！
