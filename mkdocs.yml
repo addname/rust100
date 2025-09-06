@@ -4,6 +4,8 @@ nav:
   - About: about.md
 theme:
     name: "material"
+    logo: assets/仓鼠.png
+    favicon: assets/仓鼠.png
     palette:
         primary: "deep purple"
         accent: "deep orange"
