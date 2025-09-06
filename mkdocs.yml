@@ -5,6 +5,7 @@ nav:
   - '第二章：核心概念：所有权与生命周期': 'chapter2_ownership.md'
   - '第三章：复合类型与集合': 'chapter3_collections.md'
   - '第四章：高级特性': 'chapter4_advanced.md'
+  - '第五章：并发与异步': 'chapter5_concurrency.md'
   - About: about.md
 theme:
     name: "material"
