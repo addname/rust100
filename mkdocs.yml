@@ -7,7 +7,7 @@ nav:
   - '第四章：高级特性': 'chapter4_advanced.md'
   - '第五章：并发与异步': 'chapter5_concurrency.md'
   - '第六章：项目与生态': 'chapter6_ecosystem.md'
-  - About: about.md
+  - 关于: about.md
 theme:
     name: "material"
     logo: assets/螃蟹.png
@@ -16,3 +16,4 @@ theme:
         primary: "deep purple"
         accent: "deep orange"
     language: "zh"
+
