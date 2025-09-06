@@ -1,6 +1,6 @@
 site_name: Rust 100 问
 nav:
-  - Home: index.md
+  - 首页: index.md
   - '第一章：入门与基础': 'chapter1_basics.md'
   - '第二章：核心概念：所有权与生命周期': 'chapter2_ownership.md'
   - '第三章：复合类型与集合': 'chapter3_collections.md'
