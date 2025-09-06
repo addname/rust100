@@ -1,3 +1,5 @@
+![Rust 100 Q&A Banner](assets/homepage_banner.svg)
+
 # 欢迎来到《Rust 100 问》
 
 你好，欢迎来到《Rust 100 问》！

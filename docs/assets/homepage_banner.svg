@@ -1,0 +1,24 @@
+<svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#512DA8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4527A0;stop-opacity:1" />
+    </linearGradient>
+    <style>
+      .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 60px; font-weight: bold; fill: white; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 24px; font-weight: 300; fill: #E0E0E0; }
+    </style>
+  </defs>
+
+  <rect width="800" height="200" rx="10" ry="10" fill="url(#grad)" />
+
+  <g transform="translate(50, 50) scale(1.2)">
+    <path d="M50,5 L65.45,19.32 L85.36,22.36 L71.18,36.14 L74.13,56.06 L50,47 L25.87,56.06 L28.82,36.14 L14.64,22.36 L34.55,19.32 Z" fill="#FF5722"/>
+    <circle cx="50" cy="50" r="15" fill="white"/>
+    <circle cx="50" cy="50" r="10" fill="#512DA8"/>
+  </g>
+
+  <text x="200" y="100" class="title">Rust 100 问</text>
+  <text x="205" y="145" class="subtitle">一份系统的 Rust 学习指南</text>
+
+</svg>
