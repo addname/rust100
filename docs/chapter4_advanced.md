@@ -4,6 +4,21 @@
 
 ---
 
+示意图：智能指针生态与关系
+
+```mermaid
+graph LR
+  Box --> Heap[堆分配]
+  Rc --> Owners[多所有者]
+  Arc --> ThreadSafe[线程安全多所有者]
+  RefCell --> BorrowCheck[运行时借用检查]
+  Cell --> CellSet[按值 set]
+  Rc --> RefCell
+  Arc --> Mutex
+  Mutex --> Exclusive[互斥访问]
+  RwLock --> RW[多读单写]
+```
+
 ### 56. 什么是泛型 (Generics)？
 
 **答：**
@@ -25,6 +40,28 @@ let integer_point = Point { x: 5, y: 10 };
 let float_point = Point { x: 1.0, y: 4.0 };
 ```
 
+进阶示例：trait bound、where 子句与 const generics
+```rust
+// 使用 trait bound 约束 T 必须可比较和可显示
+fn max_display<T>(a: T, b: T) -> T
+where
+    T: std::cmp::Ord + std::fmt::Display,
+{
+    let m = if a >= b { a } else { b };
+    println!("max = {}", m);
+    m
+}
+
+// const generics：在类型层面携带常量参数
+struct FixedVec<T, const N: usize> {
+    data: [T; N],
+}
+
+impl<T: Default + Copy, const N: usize> FixedVec<T, N> {
+    fn new() -> Self { Self { data: [T::default(); N] } }
+}
+```
+
 ---
 
 ### 57. 什么是 Trait？它和接口 (Interface) 有什么关系？
@@ -43,6 +80,26 @@ pub trait Summary {
 }
 ```
 一个类型可以通过 `impl Trait for Type` 的语法来实现一个 trait，从而保证该类型拥有 trait 中定义的所有方法。
+
+进阶示例：为多种类型实现 trait，重写默认方法
+```rust
+pub trait Summary {
+    fn summarize_author(&self) -> String;
+    fn summarize(&self) -> String { format!("(more from {})", self.summarize_author()) }
+}
+
+pub struct Article { pub author: String, pub title: String }
+pub struct Tweet { pub user: String, pub content: String }
+
+impl Summary for Article {
+    fn summarize_author(&self) -> String { self.author.clone() }
+    fn summarize(&self) -> String { format!("{} - {}", self.title, self.author) }
+}
+
+impl Summary for Tweet {
+    fn summarize_author(&self) -> String { self.user.clone() }
+}
+```
 
 ---
 
@@ -84,6 +141,17 @@ fn returns_summarizable() -> impl Summary {
 }
 ```
 
+进阶示例：返回闭包与迭代器
+```rust
+// 返回闭包（使用 impl Trait 隐藏复杂返回类型）
+fn make_adder(x: i32) -> impl Fn(i32) -> i32 { move |y| x + y }
+
+// 返回迭代器（链式适配器）
+fn evens_up_to(n: u32) -> impl Iterator<Item = u32> {
+    (0..=n).filter(|v| v % 2 == 0)
+}
+```
+
 ---
 
 ### 60. 什么是智能指针 (Smart Pointers)？
@@ -116,6 +184,20 @@ enum List {
 }
 ```
 
+进阶示例：`Box` 与 trait object
+```rust
+trait Draw { fn draw(&self); }
+
+impl Draw for String { fn draw(&self) { println!("label: {}", self); } }
+
+fn draw_widget(widget: Box<dyn Draw>) { widget.draw(); }
+
+fn main() {
+    let w: Box<dyn Draw> = Box::new(String::from("OK"));
+    draw_widget(w);
+}
+```
+
 ---
 
 ### 62. `Rc<T>` 是什么？它和 `Box<T>` 有什么不同？
@@ -135,6 +217,25 @@ use std::rc::Rc;
 let a = Rc::new(String::from("hello"));
 let b = Rc::clone(&a); // 增加引用计数
 let c = Rc::clone(&a); // 再次增加引用计数
+```
+
+进阶示例：`Rc<RefCell<T>>` 与 `Weak` 打破循环
+```rust
+use std::cell::RefCell;
+use std::rc::{Rc, Weak};
+
+#[derive(Debug)]
+struct Node {
+    value: i32,
+    parent: RefCell<Weak<Node>>,
+    children: RefCell<Vec<Rc<Node>>>,
+}
+
+fn main() {
+    let leaf = Rc::new(Node { value: 3, parent: RefCell::new(Weak::new()), children: RefCell::new(vec![]) });
+    let branch = Rc::new(Node { value: 5, parent: RefCell::new(Weak::new()), children: RefCell::new(vec![Rc::clone(&leaf)]) });
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch); // 使用 Weak 以避免循环引用
+}
 ```
 
 ---
@@ -181,6 +282,27 @@ let y = 4;
 assert!(equal_to_x(y));
 ```
 闭包在 Rust 中被广泛用于迭代器和线程等场景。
+
+进阶示例：`Fn`/`FnMut`/`FnOnce` 捕获差异
+```rust
+fn call_fn<F: Fn()>(f: F) { f(); }
+fn call_fn_mut<F: FnMut()>(mut f: F) { f(); }
+fn call_fn_once<F: FnOnce()>(f: F) { f(); }
+
+fn main() {
+    let s = String::from("hello");
+    let f_once = || drop(s); // 获取所有权 -> FnOnce
+    call_fn_once(f_once);
+
+    let mut n = 0;
+    let mut f_mut = || { n += 1; }; // 可变借用 -> FnMut
+    call_fn_mut(f_mut);
+
+    let x = 1;
+    let f = || println!("{}", x); // 不可变借用 -> Fn
+    call_fn(f);
+}
+```
 
 ---
 
@@ -253,6 +375,25 @@ let v2: Vec<_> = v1.iter().map(|x| x + 1).collect();
 assert_eq!(v2, vec![2, 3, 4]);
 ```
 
+进阶示例：自定义迭代器
+```rust
+struct Counter { current: u32, end: u32 }
+
+impl Counter { fn new(end: u32) -> Self { Self { current: 0, end } } }
+
+impl Iterator for Counter {
+    type Item = u32;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current < self.end { self.current += 1; Some(self.current) } else { None }
+    }
+}
+
+fn main() {
+    let sum: u32 = Counter::new(5).map(|x| x * 2).sum();
+    assert_eq!(sum, 30);
+}
+```
+
 ---
 
 ### 70. `Deref` trait 是如何工作的？
@@ -261,6 +402,27 @@ assert_eq!(v2, vec![2, 3, 4]);
 `Deref` trait 允许你自定义解引用运算符 `*` 的行为。通过为类型实现 `Deref` trait，你可以让它像一个常规引用一样工作。
 
 当对一个实现了 `Deref` 的类型使用 `*` 时，Rust 实际上会调用 `*self.deref()`。这使得我们可以编写能够同时处理智能指针和普通引用的代码。这个特性被称为**解引用强制多态 (Deref Coercions)**。
+
+进阶示例：实现 `Deref` 让自定义类型像引用
+```rust
+use std::ops::Deref;
+
+struct MyBox<T>(T);
+
+impl<T> MyBox<T> { fn new(x: T) -> Self { MyBox(x) } }
+
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target { &self.0 }
+}
+
+fn hello(name: &str) { println!("Hello, {}", name); }
+
+fn main() {
+    let m = MyBox::new(String::from("Rust"));
+    hello(&m); // Deref 强制从 &MyBox<String> -> &String -> &str
+}
+```
 
 ---
 
@@ -273,6 +435,21 @@ assert_eq!(v2, vec![2, 3, 4]);
 
 ---
 
+进阶示例：`Drop` 资源释放与自定义清理
+```rust
+struct Connection { id: u32 }
+
+impl Drop for Connection {
+    fn drop(&mut self) {
+        eprintln!("closing connection {}", self.id);
+    }
+}
+
+fn main() {
+    let _c = Connection { id: 1 }; // 作用域结束时自动调用 drop
+}
+```
+
 ### 72. 什么是 Trait Object？
 
 **答：**
@@ -282,6 +459,20 @@ Trait object 通过 `&dyn Trait` 或 `Box<dyn Trait>` 的形式表示。`dyn` �
 
 ---
 
+进阶示例：动态分发集合
+```rust
+trait Animal { fn speak(&self) -> String; }
+
+struct Dog; struct Cat;
+impl Animal for Dog { fn speak(&self) -> String { "woof".into() } }
+impl Animal for Cat { fn speak(&self) -> String { "meow".into() } }
+
+fn main() {
+    let zoo: Vec<Box<dyn Animal>> = vec![Box::new(Dog), Box::new(Cat)];
+    for a in zoo { println!("{}", a.speak()); }
+}
+```
+
 ### 73. 动态分发和静态分发有什么区别？
 
 **答：**
@@ -289,6 +480,14 @@ Trait object 通过 `&dyn Trait` 或 `Box<dyn Trait>` 的形式表示。`dyn` �
 - **动态分发 (Dynamic Dispatch):** 这是通过 trait object (`dyn Trait`) 实现的。在运行时，程序会通过查找虚函数表（vtable）来确定应该调用哪个方法。它的优点是代码尺寸更小，并且允许你在一个集合中存储不同类型的值。缺点是存在轻微的运行时性能开销。
 
 ---
+
+示意图：静态分发与动态分发对比
+
+```mermaid
+flowchart LR
+  A[泛型函数 T: Trait] -->|编译期| M[单态化 多份机器码]
+  B[&dyn Trait] -->|运行期| V[vtable 查找]
+```
 
 ### 74. `AsRef` 和 `AsMut` trait 有什么用？
 
@@ -298,6 +497,21 @@ Trait object 通过 `&dyn Trait` 或 `Box<dyn Trait>` 的形式表示。`dyn` �
 如果一个类型 `U` 实现了 `AsRef<T>`，意味着你可以通过调用 `.as_ref()` 方法，从 `&U` 廉价地得到一个 `&T`。这在编写希望接受多种不同但相关引用类型的函数时非常有用。例如，一个函数可以接受任何能被看作 `&str` 的类型（如 `String`, `&String`, `&str`）。
 
 ---
+
+进阶示例：通用路径参数
+```rust
+use std::path::Path;
+
+fn read_all<P: AsRef<Path>>(p: P) {
+    let path = p.as_ref();
+    println!("reading {:?}", path);
+}
+
+fn main() {
+    read_all("/tmp/a.txt");
+    read_all(String::from("/tmp/b.txt"));
+}
+```
 
 ### 75. 什么是 newtype 模式？
 
@@ -311,3 +525,16 @@ struct Meters(u32);
 这样做的好处是：
 1.  **类型安全:** 你不能意外地将 `Millimeters` 类型的值和 `Meters` 类型的值混用，即使它们内部都是 `u32`。
 2.  **抽象:** 你可以为这个新类型实现它自己独有的方法和 trait，而不用去修改原始类型。
+
+进阶示例：为 newtype 实现外部 trait
+```rust
+use std::fmt::{self, Display};
+
+struct Millimeters(u32);
+
+impl Display for Millimeters {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}mm", self.0)
+    }
+}
+```

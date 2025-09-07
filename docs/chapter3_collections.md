@@ -4,39 +4,96 @@
 
 ---
 
+示意图：类型与集合关系
+
+```mermaid
+flowchart LR
+  S1[Struct] --> V[Vec]
+  E1[Enum] --> V
+  V --> STR[String]
+  STR --> S[&str]
+  STR --> H[HashMap]
+```
+
 ### 41. 什么是结构体 (Struct)？如何定义？
 
 **答：**
 结构体（struct）是一种自定义数据类型，允许你将多个相关的值组合在一起并命名。它类似于其他语言中的对象或记录。有三种类型的结构体：
 
 1.  **普通结构体 (Struct):**
-    ```rust
-    struct User {
-        active: bool,
-        username: String,
-        email: String,
-        sign_in_count: u64,
-    }
-    // 创建实例
-    let user1 = User {
-        email: String::from("someone@example.com"),
-        username: String::from("someusername123"),
-        active: true,
-        sign_in_count: 1,
-    };
-    ```
+
+```rust
+struct User {
+    active: bool,
+    username: String,
+    email: String,
+    sign_in_count: u64,
+}
+// 创建实例
+let user1 = User {
+    email: String::from("someone@example.com"),
+    username: String::from("someusername123"),
+    active: true,
+    sign_in_count: 1,
+};
+```
+
+示意图：结构体与字段
+
+```mermaid
+flowchart LR
+  User[User] --> active[active: bool]
+  User --> username[username: String]
+  User --> email[email: String]
+  User --> sign_in_count[sign_in_count: u64]
+```
 
 2.  **元组结构体 (Tuple Struct):** 当你想给整个元组一个名字，但不需要给每个字段命名时使用。
-    ```rust
-    struct Color(i32, i32, i32);
-    let black = Color(0, 0, 0);
-    ```
+
+```rust
+struct Color(i32, i32, i32);
+let black = Color(0, 0, 0);
+```
 
 3.  **单元结构体 (Unit-Like Struct):** 没有任何字段，当你需要在某个类型上实现 trait 但又不需要存储数据时很有用。
-    ```rust
-    struct AlwaysEqual;
-    let subject = AlwaysEqual;
-    ```
+
+```rust
+struct AlwaysEqual;
+let subject = AlwaysEqual;
+```
+
+进阶示例：结构体初始化简写、更新语法与调试输出
+```rust
+#[derive(Debug)]
+struct User {
+    active: bool,
+    username: String,
+    email: String,
+    sign_in_count: u64,
+}
+
+fn main() {
+    let username = String::from("alice");
+    let email = String::from("alice@example.com");
+
+    // 字段初始化简写（变量名与字段名相同）
+    let mut user1 = User {
+        active: true,
+        username,
+        email,
+        sign_in_count: 1,
+    };
+
+    // 更新语法（从 user1 拷贝剩余字段；被移动的字段在 user1 上失效）
+    let user2 = User {
+        email: String::from("alice@work.com"),
+        ..user1
+    };
+
+    // user1.username 已被移动，不能再使用；但 user1.active 仍可用
+    println!("user2 = {:?}", user2);
+}
+```
 
 ---
 
@@ -46,6 +103,7 @@
 方法与函数类似，但它们在结构体（或枚举、trait）的上下文中被定义，并且它们的第一个参数总是 `self`，代表调用该方法的结构体实例。方法在 `impl` 块中定义。
 
 ```rust
+
 struct Rectangle {
     width: u32,
     height: u32,
@@ -67,6 +125,7 @@ impl Rectangle {
 let mut rect = Rectangle { width: 30, height: 50 };
 println!("The area is {}", rect.area());
 rect.set_width(35);
+
 ```
 
 ---
@@ -108,7 +167,44 @@ enum Message {
     ChangeColor(i32, i32, i32), // 关联三个 i32
 }
 ```
+
+示意图：Message 变体
+
+```mermaid
+flowchart LR
+  Message[Message] --> Quit
+  Message --> Move
+  Message --> Write
+  Message --> ChangeColor
+```
 优势在于，一个 `Message` 类型的值可以是以上四种变体中的**任何一种**。这允许我们在一个类型中编码多种状态或值的可能性，并且编译器会确保你处理了所有可能的情况。
+
+进阶示例：为枚举实现方法并匹配
+```rust
+#[derive(Debug)]
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+impl Message {
+    fn call(&self) {
+        match self {
+            Message::Quit => println!("quit"),
+            Message::Move { x, y } => println!("move to ({}, {})", x, y),
+            Message::Write(s) => println!("write: {}", s),
+            Message::ChangeColor(r, g, b) => println!("color: ({}, {}, {})", r, g, b),
+        }
+    }
+}
+
+fn main() {
+    let m = Message::Move { x: 10, y: 20 };
+    m.call();
+}
+```
 
 ---
 
@@ -142,6 +238,14 @@ fn plus_one(x: Option<i32>) -> Option<i32> {
         Some(i) => Some(i + 1),
     }
 }
+```
+
+示意图：Option 匹配流程
+
+```mermaid
+flowchart LR
+  X[Option] --> S[Some branch]
+  X --> N[None branch]
 ```
 
 ---
@@ -187,6 +291,42 @@ v.push(6);
 // 读取元素
 let third: &i32 = &v2[2]; // 通过索引访问，如果越界会 panic
 let fourth: Option<&i32> = v.get(3); // 使用 get，返回 Option，更安全
+```
+
+示意图：Vec 扩容流程（概念）
+
+```mermaid
+flowchart LR
+  A[cap] -->|push 超限| R[realloc]
+  R --> C[copy old]
+  C --> U[update ptr/cap]
+```
+
+进阶示例：容量、插入删除、排序、去重与保留
+```rust
+fn main() {
+    let mut v = Vec::with_capacity(10);
+    v.extend([3, 1, 4, 1, 5, 9]);
+    println!("len={}, cap={}", v.len(), v.capacity());
+
+    // 插入与删除
+    v.insert(1, 42); // 在索引1插入
+    let removed = v.remove(0); // 移除索引0元素
+    println!("removed={}, v={:?}", removed, v);
+
+    // 排序与去重（需要可排序元素）
+    v.sort();
+    v.dedup();
+    println!("sorted+dedup: {:?}", v);
+
+    // 过滤保留
+    v.retain(|x| *x % 2 == 1);
+    println!("保留奇数: {:?}", v);
+
+    // 迭代转换
+    let doubled: Vec<_> = v.iter().map(|x| x * 2).collect();
+    println!("翻倍: {:?}", doubled);
+}
 ```
 
 ---
@@ -246,6 +386,40 @@ let s4 = s3 + &s1;
 let s5 = format!("{}-{}-{}", s2, s1, s4);
 ```
 
+进阶示例：遍历字符与字节、查找与替换、截断与清理
+```rust
+fn main() {
+    let mut s = String::from("héllo, 世界 👋");
+    
+    // 按字符遍历（Unicode 标量）
+    for ch in s.chars() {
+        print!("[{}]", ch);
+    }
+    println!();
+
+    // 按字节遍历
+    for b in s.bytes() {
+        print!("{} ", b);
+    }
+    println!();
+
+    // 查找与替换
+    if let Some(pos) = s.find('世') {
+        println!("'世' 出现在字节位置 {}", pos);
+    }
+    let replaced = s.replace("hé", "he");
+    println!("替换后: {}", replaced);
+
+    // 截断（注意 UTF-8 边界）
+    s.truncate(5); // 以字节为单位，需确保在字符边界
+    println!("截断后: {}", s);
+
+    // 清空
+    s.clear();
+    println!("清空后长度: {}", s.len());
+}
+```
+
 ---
 
 ### 52. 为什么不能通过索引访问 `String` 的字符？
@@ -261,6 +435,14 @@ let s5 = format!("{}-{}-{}", s2, s1, s4);
 for c in "Зд".chars() {
     println!("{}", c); // 会正确打印 'З' 和 'д'
 }
+```
+
+示意图：String/Chars/Bytes 关系
+
+```mermaid
+flowchart LR
+  STR[String] --> CH[chars]
+  STR --> BY[bytes]
 ```
 
 ---
@@ -286,6 +468,32 @@ let score = scores.get(&team_name).copied().unwrap_or(0); // get 返回 Option
 // 遍历
 for (key, value) in &scores {
     println!("{}: {}", key, value);
+}
+```
+
+进阶示例：单词计数与 `or_insert_with`
+```rust
+use std::collections::HashMap;
+
+fn main() {
+    let text = "hello world wonderful world";
+    let mut counts: HashMap<&str, usize> = HashMap::new();
+
+    for word in text.split_whitespace() {
+        *counts.entry(word).or_insert(0) += 1;
+    }
+    println!("计数: {:?}", counts);
+
+    // 惰性初始化开销较大的默认值
+    let mut cache: HashMap<String, String> = HashMap::new();
+    let key = "config".to_string();
+    let value = cache.entry(key).or_insert_with(|| expensive_load());
+    println!("加载值: {}", value);
+}
+
+fn expensive_load() -> String {
+    // 模拟耗时计算/IO
+    "default".to_string()
 }
 ```
 
@@ -328,4 +536,14 @@ scores.entry(String::from("Blue")).or_insert(50);
 scores.entry(String::from("Red")).or_insert(30);
 
 println!("{:?}", scores); // {"Blue": 10, "Red": 30}
+```
+
+示意图：HashMap entry API 分支
+
+```mermaid
+flowchart LR
+  Q[entry] --> E1[Occupied]
+  Q --> E2[Vacant]
+  E1 --> OR[or_insert -> &mut V]
+  E2 --> INS[insert default -> &mut V]
 ```

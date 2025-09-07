@@ -4,6 +4,21 @@
 
 ---
 
+示意图：所有权/借用/生命周期关系
+
+```mermaid
+flowchart TD
+  A[值 Value] -->|owned by| O1[所有者 Owner]
+  O1 -->|move| O2[新所有者]
+  O1 -.->|drop when out of scope| D[(释放内存)]
+  O2 --> B1[&T 不可变借用]
+  O2 --> B2[&mut T 可变借用]
+  subgraph 生命周期
+    B1 --> L1[引用不超过被借用者]
+    B2 --> L1
+  end
+```
+
 ### 21. 什么是所有权 (Ownership)？
 
 **答：**
@@ -30,10 +45,36 @@
 对于存储在堆上的数据（如 `String`），当我们将它赋值给另一个变量时，所有权会发生**转移 (transfer)**，我们称之为“移动 (move)”。
 
 ```rust
-let s1 = String::from("hello");
-let s2 = s1; // s1 的所有权被移动到 s2
+fn main() {
+    let s1 = String::from("hello");
+    println!("s1 创建后: {}", s1);
+    
+    let s2 = s1; // s1 的所有权被移动到 s2
+    println!("移动后 s2: {}", s2);
+    
+    // println!("{}, world!", s1); // 编译错误！s1 不再有效
+    
+    // 如果想要复制而不是移动，可以使用 clone
+    let s3 = String::from("world");
+    let s4 = s3.clone(); // 深拷贝
+    println!("s3: {}, s4: {}", s3, s4); // 两个都有效
+    
+    // 演示移动后的变量状态
+    demonstrate_move();
+}
 
-// println!("{}, world!", s1); // 编译错误！s1 不再有效
+fn demonstrate_move() {
+    let original = String::from("I will be moved");
+    let moved_to = take_ownership(original);
+    
+    // println!("{}", original); // 编译错误：original 已被移动
+    println!("函数返回: {}", moved_to);
+}
+
+fn take_ownership(s: String) -> String {
+    println!("函数内部: {}", s);
+    s // 返回所有权
+}
 ```
 为了保证内存安全（防止二次释放），一旦所有权转移，原来的变量（`s1`）就不能再被使用。
 
@@ -45,10 +86,51 @@ let s2 = s1; // s1 的所有权被移动到 s2
 对于完全存储在栈上的数据（如 `i32`, `bool`, `char` 等基本类型），当我们将它赋值给另一个变量时，会创建一个完整的副本。这被称为“复制 (copy)”。
 
 ```rust
-let x = 5;
-let y = x; // x 的值被复制到 y
+fn main() {
+    // 基本类型的复制
+    let x = 5;
+    let y = x; // x 的值被复制到 y
+    println!("复制后: x = {}, y = {}", x, y); // 正确！x 和 y 都有效
+    
+    // 多种 Copy 类型示例
+    let a = 42;
+    let b = true;
+    let c = 3.14;
+    let d = 'R';
+    
+    let a2 = a; // 复制
+    let b2 = b; // 复制
+    let c2 = c; // 复制
+    let d2 = d; // 复制
+    
+    println!("原始值仍然有效:");
+    println!("a = {}, b = {}, c = {}, d = {}", a, b, c, d);
+    println!("复制的值:");
+    println!("a2 = {}, b2 = {}, c2 = {}, d2 = {}", a2, b2, c2, d2);
+    
+    // 元组的复制（如果所有元素都实现了 Copy）
+    let tuple1 = (1, 2, 3);
+    let tuple2 = tuple1; // 复制
+    println!("tuple1: {:?}, tuple2: {:?}", tuple1, tuple2);
+    
+    // 数组的复制（如果元素实现了 Copy 且长度适中）
+    let arr1 = [1, 2, 3, 4, 5];
+    let arr2 = arr1; // 复制
+    println!("arr1: {:?}, arr2: {:?}", arr1, arr2);
+    
+    demonstrate_copy_in_functions();
+}
 
-println!("x = {}, y = {}", x, y); // 正确！x 和 y 都有效
+fn demonstrate_copy_in_functions() {
+    let num = 100;
+    let result = square(num);
+    println!("原始值 {} 在函数调用后仍然有效", num);
+    println!("平方结果: {}", result);
+}
+
+fn square(x: i32) -> i32 {
+    x * x
+}
 ```
 如果一个类型实现了 `Copy` trait，那么它的变量在赋值时就不会被移动，而是被复制。
 
@@ -63,17 +145,65 @@ println!("x = {}, y = {}", x, y); // 正确！x 和 y 都有效
 
 ```rust
 fn main() {
+    // 所有权转移示例
     let s = String::from("hello");
+    println!("调用函数前: {}", s);
+    
     takes_ownership(s); // s 的所有权移动到函数里
-    // println!("{}", s); // 编译错误！
+    // println!("{}", s); // 编译错误！s 已失效
 
+    // Copy 类型示例
     let x = 5;
+    println!("调用函数前: {}", x);
+    
     makes_copy(x); // x 的值被复制到函数里
-    println!("{}", x); // 正确！
+    println!("调用函数后: {}", x); // 正确！x 仍然有效
+    
+    // 函数返回所有权
+    let s1 = gives_ownership(); // 函数返回值的所有权转移给 s1
+    println!("从函数获得: {}", s1);
+    
+    let s2 = String::from("world");
+    let s3 = takes_and_gives_back(s2); // s2 移入函数，返回值移给 s3
+    // println!("{}", s2); // 编译错误！s2 已失效
+    println!("取回的值: {}", s3);
+    
+    // 演示多个变量的所有权转移
+    demonstrate_multiple_ownership();
 }
 
-fn takes_ownership(some_string: String) { /* ... */ }
-fn makes_copy(some_integer: i32) { /* ... */ }
+fn takes_ownership(some_string: String) {
+    println!("函数接收到: {}", some_string);
+} // some_string 在这里被 drop
+
+fn makes_copy(some_integer: i32) {
+    println!("函数接收到: {}", some_integer);
+} // some_integer 在这里超出作用域，但因为是 Copy，没有特殊处理
+
+fn gives_ownership() -> String {
+    let some_string = String::from("函数创建的字符串");
+    some_string // 返回 some_string，所有权移出函数
+}
+
+fn takes_and_gives_back(a_string: String) -> String {
+    println!("函数处理: {}", a_string);
+    a_string // 返回 a_string，所有权移出函数
+}
+
+fn demonstrate_multiple_ownership() {
+    let s1 = String::from("first");
+    let s2 = String::from("second");
+    let s3 = String::from("third");
+    
+    let (s1, s2, s3, len) = calculate_lengths(s1, s2, s3);
+    println!("返回的字符串: {}, {}, {}", s1, s2, s3);
+    println!("总长度: {}", len);
+}
+
+fn calculate_lengths(s1: String, s2: String, s3: String) -> (String, String, String, usize) {
+    let length = s1.len() + s2.len() + s3.len();
+    (s1, s2, s3, length)
+}
 ```
 函数也可以返回值，从而将所有权交还给调用者。
 
@@ -85,12 +215,85 @@ fn makes_copy(some_integer: i32) { /* ... */ }
 如果我们希望在不转移所有权的情况下让函数使用某个值，我们可以传递它的**引用 (reference)**。这个过程称为“借用”。引用使用 `&` 符号。
 
 ```rust
-let s1 = String::from("hello");
-let len = calculate_length(&s1); // 传递 s1 的引用
+fn main() {
+    // 基本借用示例
+    let s1 = String::from("hello");
+    let len = calculate_length(&s1); // 传递 s1 的引用
+    println!("字符串 '{}' 的长度是 {}.", s1, len); // 正确！s1 仍然有效
+    
+    // 多次借用
+    let s2 = String::from("world");
+    let len1 = calculate_length(&s2);
+    let len2 = calculate_length(&s2);
+    let len3 = calculate_length(&s2);
+    println!("字符串 '{}' 可以被多次借用: {}, {}, {}", s2, len1, len2, len3);
+    
+    // 不同类型的借用
+    let numbers = vec![1, 2, 3, 4, 5];
+    let sum = calculate_sum(&numbers);
+    let count = count_elements(&numbers);
+    println!("数组 {:?} 的和: {}, 元素个数: {}", numbers, sum, count);
+    
+    // 借用数组切片
+    let arr = [1, 2, 3, 4, 5];
+    let slice_sum = sum_slice(&arr[1..4]); // 借用切片
+    println!("切片 {:?} 的和: {}", &arr[1..4], slice_sum);
+    
+    demonstrate_reference_rules();
+}
 
-println!("The length of '{}' is {}.", s1, len); // 正确！s1 仍然有效
+fn calculate_length(s: &String) -> usize {
+    s.len()
+} // s 在这里超出作用域，但因为它不拥有引用值，所以不会 drop
+
+fn calculate_sum(v: &Vec<i32>) -> i32 {
+    let mut sum = 0;
+    for item in v {
+        sum += item;
+    }
+    sum
+}
+
+fn count_elements(v: &Vec<i32>) -> usize {
+    v.len()
+}
+
+fn sum_slice(slice: &[i32]) -> i32 {
+    slice.iter().sum()
+}
+
+fn demonstrate_reference_rules() {
+    let s = String::from("reference rules");
+    
+    // 可以同时有多个不可变引用
+    let r1 = &s;
+    let r2 = &s;
+    let r3 = &s;
+    println!("多个不可变引用: {}, {}, {}", r1, r2, r3);
+    
+    // 引用的作用域
+    {
+        let r4 = &s;
+        println!("作用域内的引用: {}", r4);
+    } // r4 在这里超出作用域
+    
+    println!("原始字符串仍然有效: {}", s);
+}
 ```
 通过引用，`calculate_length` 函数“借用”了 `s1`，但并没有获得其所有权。
+
+示意图：所有权传递与借用调用链
+
+```mermaid
+sequenceDiagram
+    participant Main
+    participant Func as takes_ownership
+    participant Borrow as calculate_length
+    Main->>Func: move String(s)
+    Func-->>Main: (所有权不回退)
+    Main->>Borrow: &String(s) 借用
+    Borrow-->>Main: 长度 (所有权仍在 Main)
+```
 
 ---
 
@@ -101,17 +304,77 @@ println!("The length of '{}' is {}.", s1, len); // 正确！s1 仍然有效
 - **可变引用 (Mutable Reference):** `&mut T`。它允许你修改借用的数据。
 
 ```rust
-let mut s = String::from("hello");
+fn main() {
+    // 可变借用示例
+    let mut s = String::from("hello");
+    println!("原始字符串: {}", s);
+    
+    {
+        // 可变借用
+        let r1 = &mut s;
+        r1.push_str(", world");
+        println!("可变借用修改后: {}", r1);
+    } // r1 在这里超出作用域
+    
+    println!("修改后的原字符串: {}", s);
+    
+    // 演示借用规则
+    demonstrate_borrowing_rules();
+    
+    // 可变引用的实际应用
+    let mut numbers = vec![1, 2, 3];
+    println!("修改前: {:?}", numbers);
+    
+    modify_vector(&mut numbers);
+    println!("修改后: {:?}", numbers);
+    
+    // 通过可变引用交换值
+    let mut a = 10;
+    let mut b = 20;
+    println!("交换前: a = {}, b = {}", a, b);
+    
+    swap_values(&mut a, &mut b);
+    println!("交换后: a = {}, b = {}", a, b);
+}
 
-// 可变借用
-let r1 = &mut s;
-r1.push_str(", world");
-println!("{}", r1);
+fn demonstrate_borrowing_rules() {
+    let mut s = String::from("borrowing rules");
+    
+    // 规则1: 同一时间只能有一个可变引用
+    {
+        let r1 = &mut s;
+        r1.push_str(" - rule 1");
+        println!("可变引用: {}", r1);
+        // let r2 = &mut s; // 编译错误！不能同时有两个可变引用
+    }
+    
+    // 规则2: 可变引用和不可变引用不能同时存在
+    {
+        let r1 = &s; // 不可变引用
+        let r2 = &s; // 另一个不可变引用
+        println!("不可变引用: {}, {}", r1, r2);
+        
+        // let r3 = &mut s; // 编译错误！不能在有不可变引用时创建可变引用
+    }
+    
+    // 规则3: 引用必须总是有效的
+    {
+        let r1 = &s;
+        println!("有效的引用: {}", r1);
+    }
+}
 
-// 不可变借用
-let s2 = String::from("immutable");
-let r2 = &s2;
-// r2.push_str("!"); // 编译错误！不能修改不可变引用的数据
+fn modify_vector(v: &mut Vec<i32>) {
+    v.push(4);
+    v.push(5);
+    v[0] = 100; // 修改第一个元素
+}
+
+fn swap_values(x: &mut i32, y: &mut i32) {
+    let temp = *x;
+    *x = *y;
+    *y = temp;
+}
 ```
 
 ---
@@ -152,10 +415,95 @@ Rust 的编译器通过所有权和借用规则**保证你永远不会遇到悬�
 最常见的切片是字符串切片 `&str`。
 
 ```rust
-let s = String::from("hello world");
+fn main() {
+    // 基本字符串切片
+    let s = String::from("hello world");
+    println!("原始字符串: {}", s);
+    
+    let hello = &s[0..5]; // "hello"
+    let world = &s[6..11]; // "world"
+    println!("切片: '{}' 和 '{}'", hello, world);
+    
+    // 切片语法的各种形式
+    let full = &s[..]; // 整个字符串
+    let from_start = &s[..5]; // 从开始到索引5
+    let to_end = &s[6..]; // 从索引6到结束
+    println!("完整: '{}', 开始: '{}', 结尾: '{}'", full, from_start, to_end);
+    
+    // 数组切片
+    let a = [1, 2, 3, 4, 5];
+    let slice = &a[1..4]; // [2, 3, 4]
+    println!("数组: {:?}, 切片: {:?}", a, slice);
+    
+    // 字符串字面量就是切片
+    let literal = "Hello, Rust!"; // 类型是 &str
+    println!("字符串字面量: {}", literal);
+    
+    // 切片作为函数参数
+    let word = first_word(&s);
+    println!("第一个单词: {}", word);
+    
+    let word2 = first_word("rust programming");
+    println!("字面量的第一个单词: {}", word2);
+    
+    // 可变切片
+    demonstrate_mutable_slices();
+    
+    // 切片的实际应用
+    demonstrate_slice_applications();
+}
 
-let hello = &s[0..5]; // "hello"
-let world = &s[6..11]; // "world"
+fn first_word(s: &str) -> &str {
+    let bytes = s.as_bytes();
+    
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+    
+    &s[..]
+}
+
+fn demonstrate_mutable_slices() {
+    let mut arr = [1, 2, 3, 4, 5];
+    println!("原始数组: {:?}", arr);
+    
+    {
+        let slice = &mut arr[1..4];
+        slice[0] = 10;
+        slice[1] = 20;
+        slice[2] = 30;
+        println!("修改切片后: {:?}", slice);
+    }
+    
+    println!("修改后的数组: {:?}", arr);
+}
+
+fn demonstrate_slice_applications() {
+    // 在函数中使用切片提高灵活性
+    let s1 = String::from("hello world");
+    let s2 = "rust programming";
+    let arr = [1, 2, 3, 4, 5];
+    
+    println!("字符串长度: {}", get_length(&s1));
+    println!("字面量长度: {}", get_length(s2));
+    
+    println!("数组切片和: {}", sum_slice(&arr[..]));
+    println!("部分切片和: {}", sum_slice(&arr[1..4]));
+}
+
+fn get_length(s: &str) -> usize {
+    s.len()
+}
+
+fn sum_slice(slice: &[i32]) -> i32 {
+    let mut sum = 0;
+    for &item in slice {
+        sum += item;
+    }
+    sum
+}
 ```
 字符串字面量（如 `"hello"`）本身就是切片类型 (`&'static str`)。
 

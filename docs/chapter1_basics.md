@@ -4,6 +4,17 @@
 
 ---
 
+提示：安装与项目生命周期简图
+
+```mermaid
+flowchart LR
+  A[安装 rustup] --> B[安装工具链: stable/beta/nightly]
+  B --> C[cargo new/init]
+  C --> D[cargo build/check/run]
+  D --> E[cargo test/doc]
+  E --> F[cargo publish]
+```
+
 ### 1. 如何在我的电脑上安装 Rust？
 
 **答：**
@@ -38,8 +49,24 @@ cargo new my_project
 
 # 创建一个库项目
 cargo new my_library --lib
+
+# 在现有目录中初始化项目
+cd existing_folder
+cargo init
+
+# 指定项目名称和版本
+cargo new my_app --name "awesome-app"
 ```
 这会创建一个包含 `Cargo.toml`（配置文件）和 `src/main.rs`（或 `src/lib.rs`）源文件的新目录。
+
+**生成的项目结构：**
+```
+my_project/
+├── Cargo.toml
+├── src/
+│   └── main.rs
+└── .gitignore
+```
 
 ---
 
@@ -61,9 +88,34 @@ cargo run
 ### 5. `Cargo.toml` 文件是做什么用的？
 
 **答：**
-`Cargo.toml` 是 Cargo 的清单文件，采用 TOML 格式。它包含了项目的所有元数据和配置，主要包括：
-- `[package]`: 项目信息，如名称、版本、作者。
-- `[dependencies]`: 项目所依赖的外部库（crates）。
+`Cargo.toml` 是 Cargo 的清单文件，采用 TOML 格式。它包含了项目的所有元数据和配置：
+
+```toml
+[package]
+name = "my_project"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <you@example.com>"]
+description = "A sample Rust project"
+license = "MIT"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.0", features = ["full"] }
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+```
+
+主要配置段：
+- `[package]`: 项目信息，如名称、版本、作者
+- `[dependencies]`: 项目所依赖的外部库（crates）
+- `[dev-dependencies]`: 开发和测试时的依赖
+- `[[bin]]`: 二进制目标配置
 
 ---
 
@@ -73,10 +125,25 @@ cargo run
 默认是**不可变**的。这是 Rust 强调安全性的一个核心特性。如果你想让一个变量可变，必须使用 `mut` 关键字。
 
 ```rust
-let x = 5; // 不可变
-let mut y = 10; // 可变
-y = 15; // 正确
-// x = 6; // 编译错误！
+fn main() {
+    let x = 5; // 不可变
+    let mut y = 10; // 可变
+    
+    println!("x = {}, y = {}", x, y);
+    
+    y = 15; // 正确，y 是可变的
+    println!("现在 y = {}", y);
+    
+    // x = 6; // 编译错误！不能修改不可变变量
+    
+    // 可以通过 shadowing 重新定义 x
+    let x = x + 1;
+    println!("通过 shadowing，x = {}", x);
+    
+    // 甚至可以改变类型
+    let x = "现在是字符串";
+    println!("x = {}", x);
+}
 ```
 
 ---
@@ -85,10 +152,45 @@ y = 15; // 正确
 
 **答：**
 Rust 有四种主要的标量类型：
-- **整数 (Integer):** 有符号（`i8`, `i32`, `i64`, `isize`）和无符号（`u8`, `u32`, `u64`, `usize`）。`isize` 和 `usize` 的大小取决于你的计算机架构（32位或64位）。
-- **浮点数 (Floating-Point):** `f32` 和 `f64`。`f64` 是默认类型，精度更高。
-- **布尔值 (Boolean):** `bool`，值为 `true` 或 `false`。
-- **字符 (Character):** `char`，表示一个单独的 Unicode 标量值，用单引号括起来（例如 `'a'`）。它的大小是 4 个字节。
+
+```rust
+fn main() {
+    // 整数类型
+    let decimal = 98_222;          // 十进制
+    let hex = 0xff;                // 十六进制
+    let octal = 0o77;              // 八进制
+    let binary = 0b1111_0000;      // 二进制
+    let byte = b'A';               // 字节（仅限 u8）
+    
+    // 显式类型注解
+    let x: i32 = 42;
+    let y: u64 = 1000;
+    
+    // 浮点数类型
+    let pi = 3.14159;              // f64（默认）
+    let e: f32 = 2.71828;          // f32
+    
+    // 布尔值
+    let is_rust_awesome = true;
+    let is_learning: bool = false;
+    
+    // 字符类型（Unicode）
+    let letter = 'A';
+    let emoji = '😊';
+    let chinese = '中';
+    
+    println!("整数: {}, {}, {}, {}, {}", decimal, hex, octal, binary, byte);
+    println!("浮点数: {}, {}", pi, e);
+    println!("布尔值: {}, {}", is_rust_awesome, is_learning);
+    println!("字符: {}, {}, {}", letter, emoji, chinese);
+}
+```
+
+**类型详解：**
+- **整数 (Integer):** 有符号（`i8`, `i16`, `i32`, `i64`, `i128`, `isize`）和无符号（`u8`, `u16`, `u32`, `u64`, `u128`, `usize`）
+- **浮点数 (Floating-Point):** `f32` 和 `f64`。`f64` 是默认类型，精度更高
+- **布尔值 (Boolean):** `bool`，值为 `true` 或 `false`
+- **字符 (Character):** `char`，表示一个 Unicode 标量值，大小为 4 个字节
 
 ---
 
@@ -115,6 +217,41 @@ fn say_hello() {
 // 有参数，有返回值
 fn add_one(x: i32) -> i32 {
     x + 1 // 表达式作为返回值，注意没有分号
+}
+
+// 多个参数
+fn calculate_area(width: u32, height: u32) -> u32 {
+    width * height
+}
+
+// 带有默认参数的模拟（通过重载实现）
+fn greet_default() {
+    greet("World");
+}
+
+fn greet(name: &str) {
+    println!("Hello, {}!", name);
+}
+
+// 返回多个值（使用元组）
+fn swap(x: i32, y: i32) -> (i32, i32) {
+    (y, x)
+}
+
+fn main() {
+    say_hello();
+    
+    let result = add_one(5);
+    println!("5 + 1 = {}", result);
+    
+    let area = calculate_area(10, 20);
+    println!("面积 = {}", area);
+    
+    greet_default();
+    greet("Rust");
+    
+    let (a, b) = swap(1, 2);
+    println!("交换后: a = {}, b = {}", a, b);
 }
 ```
 
@@ -168,15 +305,54 @@ Rust 提供了三种循环结构：
 - `for`: 遍历一个迭代器。这是最常用和最安全的循环方式。
 
 ```rust
-// for 循环
-let a = [10, 20, 30, 40, 50];
-for element in a.iter() {
-    println!("the value is: {}", element);
-}
-
-// 遍历一个范围
-for number in 1..4 { // 不包括 4
-    println!("{}!", number);
+fn main() {
+    // for 循环 - 遍历数组
+    let a = [10, 20, 30, 40, 50];
+    for element in a.iter() {
+        println!("数组元素: {}", element);
+    }
+    
+    // 遍历数组并获取索引
+    for (index, value) in a.iter().enumerate() {
+        println!("索引 {}: 值 {}", index, value);
+    }
+    
+    // 遍历范围
+    for number in 1..4 { // 不包括 4
+        println!("数字: {}!", number);
+    }
+    
+    // 包含结束值的范围
+    for number in 1..=3 { // 包括 3
+        println!("包含范围: {}", number);
+    }
+    
+    // while 循环
+    let mut counter = 0;
+    while counter < 3 {
+        println!("计数器: {}", counter);
+        counter += 1;
+    }
+    
+    // loop 无限循环
+    let mut x = 0;
+    let result = loop {
+        x += 1;
+        if x == 10 {
+            break x * 2; // 从 loop 中返回值
+        }
+    };
+    println!("循环结果: {}", result);
+    
+    // 带标签的循环
+    'outer: loop {
+        println!("外层循环");
+        
+        'inner: loop {
+            println!("内层循环");
+            break 'outer; // 跳出外层循环
+        }
+    }
 }
 ```
 
@@ -220,14 +396,41 @@ fn my_function() {}
 元组是一种将多个不同类型的值组合成一个复合类型的方式。元组的长度是固定的，一旦声明就无法改变。
 
 ```rust
-let tup: (i32, f64, u8) = (500, 6.4, 1);
+fn main() {
+    // 创建元组
+    let tup: (i32, f64, u8) = (500, 6.4, 1);
+    
+    // 解构元组
+    let (x, y, z) = tup;
+    println!("解构后: x={}, y={}, z={}", x, y, z);
+    
+    // 通过索引访问
+    let five_hundred = tup.0;
+    let six_point_four = tup.1;
+    let one = tup.2;
+    println!("索引访问: {}, {}, {}", five_hundred, six_point_four, one);
+    
+    // 单元元组（空元组）
+    let unit = ();
+    println!("单元类型: {:?}", unit);
+    
+    // 不同类型的元组
+    let mixed = ("hello", 42, true, 3.14);
+    println!("混合类型元组: {:?}", mixed);
+    
+    // 嵌套元组
+    let nested = ((1, 2), (3, 4));
+    println!("嵌套元组: {:?}", nested);
+    println!("访问嵌套元素: {}", (nested.0).1); // 输出 2
+    
+    // 元组作为函数返回值
+    let coords = get_coordinates();
+    println!("坐标: ({}, {})", coords.0, coords.1);
+}
 
-// 解构元组
-let (x, y, z) = tup;
-println!("The value of y is: {}", y); // 打印 6.4
-
-// 通过索引访问
-let five_hundred = tup.0;
+fn get_coordinates() -> (i32, i32) {
+    (10, 20)
+}
 ```
 
 ---
@@ -238,11 +441,48 @@ let five_hundred = tup.0;
 数组也是一种将多个值组合在一起的方式，但与元组不同，数组中的每个元素的类型**必须相同**。Rust 中的数组长度是固定的，存储在栈上。
 
 ```rust
-let a = [1, 2, 3, 4, 5]; // 编译器自动推断类型和长度
-let months: [&str; 12] = ["January", "February", /* ... */, "December"];
-
-// 访问元素
-let first = a[0];
+fn main() {
+    // 基本数组定义
+    let a = [1, 2, 3, 4, 5]; // 编译器自动推断类型和长度
+    let months: [&str; 12] = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    
+    // 初始化相同值的数组
+    let zeros = [0; 5]; // [0, 0, 0, 0, 0]
+    let threes = [3; 4]; // [3, 3, 3, 3]
+    
+    // 访问元素
+    let first = a[0];
+    let second = a[1];
+    println!("第一个元素: {}, 第二个元素: {}", first, second);
+    
+    // 数组长度
+    println!("数组 a 的长度: {}", a.len());
+    println!("数组 months 的长度: {}", months.len());
+    
+    // 遍历数组
+    println!("遍历数组 a:");
+    for element in &a {
+        println!("  {}", element);
+    }
+    
+    // 使用索引遍历
+    println!("使用索引遍历:");
+    for i in 0..a.len() {
+        println!("  a[{}] = {}", i, a[i]);
+    }
+    
+    // 数组切片
+    let slice = &a[1..4]; // [2, 3, 4]
+    println!("切片: {:?}", slice);
+    
+    // 多维数组
+    let matrix: [[i32; 3]; 2] = [[1, 2, 3], [4, 5, 6]];
+    println!("矩阵: {:?}", matrix);
+    println!("矩阵元素 [1][2]: {}", matrix[1][2]);
+}
 ```
 
 ---

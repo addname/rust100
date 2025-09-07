@@ -7,6 +7,7 @@ nav:
   - '第四章：高级特性': 'chapter4_advanced.md'
   - '第五章：并发与异步': 'chapter5_concurrency.md'
   - '第六章：项目与生态': 'chapter6_ecosystem.md'
+  - '第七章：工程与进阶专题': 'chapter7_engineering.md'
   - 关于: about.md
 theme:
     name: "material"
@@ -16,4 +17,16 @@ theme:
         primary: "deep purple"
         accent: "deep orange"
     language: "zh"
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+  - assets/mermaid-init.js
 

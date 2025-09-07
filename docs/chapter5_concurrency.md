@@ -4,6 +4,19 @@ Rust 提供了强大的工具来安全地编写并发甚至并行的代码。它
 
 ---
 
+示意图：并发与异步模型
+
+```mermaid
+flowchart LR
+  T[Threads] --> M[消息传递 mpsc]
+  T --> S[共享状态 Arc<Mutex>]
+  subgraph Async Runtime
+    E[Executor 执行器] --> P[Poll Futures]
+    R[Reactor 反应器] -->|I/O 事件| E
+  end
+  Async[async/await] --> E
+```
+
 ### 76. 如何在 Rust 中创建一个新线程？
 
 **答：**
@@ -78,6 +91,53 @@ let received = rx.recv().unwrap(); // recv 会阻塞主线程直到接收到消�
 println!("Got: {}", received);
 ```
 
+示意图：多生产者通道
+
+```mermaid
+flowchart LR
+  P1[tx1] --> CH[(channel)]
+  P2[tx2] --> CH
+  P3[tx3] --> CH
+  CH --> RX[rx]
+```
+
+进阶示例：多个生产者与接收循环、超时接收
+```rust
+use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    let (tx, rx) = mpsc::channel::<String>();
+
+    // 多个生产者：克隆发送端
+    for id in 0..3 {
+        let tx_clone = tx.clone();
+        thread::spawn(move || {
+            for i in 0..3 {
+                let msg = format!("producer#{id} -> {i}");
+                tx_clone.send(msg).unwrap();
+                thread::sleep(Duration::from_millis(20));
+            }
+        });
+    }
+    drop(tx); // 关闭原始发送端，确保接收端在生产者结束后退出循环
+
+    // 接收循环
+    for msg in rx.iter() {
+        println!("recv: {}", msg);
+    }
+
+    // 使用 recv_timeout 等待一段时间
+    let (tx2, rx2) = mpsc::channel();
+    thread::spawn(move || thread::sleep(Duration::from_millis(200)));
+    match rx2.recv_timeout(Duration::from_millis(100)) {
+        Ok(v) => println!("got {}", v),
+        Err(e) => println!("timeout or closed: {}", e),
+    }
+}
+```
+
 ---
 
 ### 79. 什么是互斥锁 (Mutex)？如何使用它在线程间共享状态？
@@ -103,6 +163,47 @@ println!("m = {:?}", m);
 `lock()` 方法返回的是一个智能指针 `MutexGuard`。当 `MutexGuard` 离开作用域时，锁会自动被释放。这极大地避免了忘记解锁导致的死锁问题。
 
 ---
+
+进阶示例：`RwLock` 与锁毒化处理
+```rust
+use std::sync::{RwLock, PoisonError};
+
+fn main() {
+    let data = RwLock::new(vec![1, 2, 3]);
+
+    // 多个读者
+    {
+        let r1 = data.read().unwrap();
+        let r2 = data.read().unwrap();
+        println!("reads: {:?}, {:?}", *r1, *r2);
+    }
+
+    // 写者
+    {
+        let mut w = data.write().unwrap();
+        w.push(4);
+    }
+
+    // 锁毒化示例
+    let bad = RwLock::new(0);
+    let res = std::panic::catch_unwind(|| {
+        let mut g = bad.write().unwrap();
+        *g = 10;
+        panic!("oops");
+    });
+    if res.is_err() {
+        let recovered = match bad.write() {
+            Ok(g) => *g,
+            Err(PoisonError { .. }) => {
+                // 恢复访问毒化的锁
+                let g = bad.write().unwrap_or_else(|e| e.into_inner());
+                *g
+            }
+        };
+        println!("recovered value = {}", recovered);
+    }
+}
+```
 
 ### 80. `Arc<T>` 是什么？为什么它经常和 `Mutex<T>` 一起使用？
 
@@ -140,7 +241,57 @@ for handle in handles {
 println!("Result: {}", *counter.lock().unwrap()); // 打印 10
 ```
 
+示意图：Arc<Mutex<T>> 共享计数器
+
+```mermaid
+flowchart LR
+  subgraph 堆
+    M[Mutex<T>]
+  end
+  A[Arc] --> M
+  B[Arc] --> M
+  C[Arc] --> M
+```
+
 ---
+
+进阶示例：简单线程池（工作窃取的极简雏形）
+```rust
+use std::sync::{Arc, Mutex, mpsc};
+use std::thread;
+
+type Job = Box<dyn FnOnce() + Send + 'static>;
+
+struct ThreadPool {
+    workers: Vec<thread::JoinHandle<()>>,
+    sender: mpsc::Sender<Job>,
+}
+
+impl ThreadPool {
+    fn new(size: usize) -> Self {
+        let (tx, rx) = mpsc::channel::<Job>();
+        let rx = Arc::new(Mutex::new(rx));
+        let mut workers = Vec::new();
+        for _ in 0..size {
+            let rx = Arc::clone(&rx);
+            workers.push(thread::spawn(move || loop {
+                match rx.lock().unwrap().recv() {
+                    Ok(job) => job(),
+                    Err(_) => break,
+                }
+            }));
+        }
+        Self { workers, sender: tx }
+    }
+
+    fn execute<F>(&self, f: F)
+    where
+        F: FnOnce() + Send + 'static,
+    {
+        self.sender.send(Box::new(f)).unwrap();
+    }
+}
+```
 
 ### 81. `Send` 和 `Sync` trait 有什么作用？
 
@@ -177,6 +328,37 @@ async fn do_something() {
     // 模拟一个异步操作
     let result = some_async_operation().await; 
     println!("Got result: {}", result);
+}
+```
+
+进阶示例（Tokio）：并发任务、select 与超时、取消
+```rust
+use tokio::time::{self, Duration};
+
+async fn work(id: u32) -> u32 {
+    time::sleep(Duration::from_millis(50 * id as u64)).await;
+    id
+}
+
+#[tokio::main]
+async fn main() {
+    // 并发执行多个任务
+    let (a, b) = tokio::join!(work(1), work(2));
+    println!("results: {}, {}", a, b);
+
+    // 超时
+    let res = time::timeout(Duration::from_millis(60), work(2)).await;
+    println!("timeout result: {:?}", res);
+
+    // select 选择先完成的任务
+    tokio::select! {
+        val = work(1) => println!("first done: {}", val),
+        _ = work(3) => println!("second done"),
+    }
+
+    // 取消：丢弃 future 即可
+    let fut = work(5);
+    drop(fut); // 被取消，不会完成
 }
 ```
 

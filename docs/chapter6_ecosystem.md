@@ -4,6 +4,21 @@
 
 ---
 
+示意图：工作空间与发布流水线
+
+```mermaid
+flowchart LR
+  subgraph Workspace
+    A[Root Cargo.toml] --> M1[成员 crate]
+    A --> M2[共享依赖]
+  end
+  CI[CI Pipeline] --> FMT[cargo fmt]
+  CI --> CLP[clippy]
+  CI --> TEST[cargo test]
+  CI --> PKG[cargo package]
+  PKG --> PUB[cargo publish]
+```
+
 ### 86. 如何在 Rust 中组织一个复杂的项目？模块系统是如何工作的？
 
 **答：**
@@ -42,6 +57,16 @@ pub fn add_to_waitlist() {}
 使用 `use` 关键字可以将路径引入作用域，从而使用更短的名称来调用函数。
 
 ---
+
+进阶示例：模块可见性、`pub(crate)` 与重导出
+```rust
+// lib.rs
+mod util {
+    pub(crate) fn helper() {}
+}
+
+pub use util::helper; // 重新导出为公共 API
+```
 
 ### 87. `pub` 关键字是做什么的？
 
@@ -100,6 +125,30 @@ enum Result<T, E> {
 函数在可能失败时，应该返回 `Result` 类型。这强制调用者必须处理错误的可能性，从而使代码更健壮。你可以使用 `match`、`if let` 或更简洁的 `?` 运算符来处理 `Result`。
 
 ---
+
+进阶示例：`thiserror` 定义库错误，`anyhow` 用于应用层
+```rust
+// Cargo.toml
+// thiserror = "1", anyhow = "1"
+
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum MyError {
+    #[error("io error: {0}")] Io(#[from] std::io::Error),
+    #[error("parse int error: {0}")] Parse(#[from] std::num::ParseIntError),
+}
+
+pub fn parse_num(s: &str) -> Result<i32, MyError> {
+    Ok(s.trim().parse()?)
+}
+
+fn main() -> anyhow::Result<()> {
+    let n = parse_num("42")?;
+    println!("{}", n);
+    Ok(())
+}
+```
 
 ### 91. `panic!` 和 `Result` 有什么区别？应该在什么时候使用它们？
 
@@ -210,6 +259,21 @@ pub fn add_two(a: i32) -> i32 {
 
 ---
 
+进阶示例：测试夹具与 `#[test]` 辅助函数
+```rust
+// tests/common/mod.rs
+pub fn setup() { /* create temp dirs, set env, etc. */ }
+
+// tests/integration.rs
+mod common;
+
+#[test]
+fn it_works() {
+    common::setup();
+    assert_eq!(2 + 2, 4);
+}
+```
+
 ### 96. 什么是基准测试 (Benchmarking)？
 
 **答：**
@@ -228,6 +292,20 @@ pub fn add_two(a: i32) -> i32 {
 
 ---
 
+进阶示例：工作空间顶层配置与成员
+```toml
+# Cargo.toml (workspace root)
+[workspace]
+members = ["crates/app", "crates/lib"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+```
+
 ### 98. 如何发布我自己的 Crate 到 crates.io？
 
 **答：**
@@ -239,6 +317,14 @@ pub fn add_two(a: i32) -> i32 {
 注意：发布一个版本是**永久性的**，你不能覆盖它，只能发布新的版本。
 
 ---
+
+进阶示例：发布前自检清单
+```bash
+cargo fmt --all -- --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --all --all-features
+cargo publish --dry-run
+```
 
 ### 99. Rust 生态中有哪些必知的 Crate？
 
