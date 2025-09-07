@@ -1,0 +1,43 @@
+name: Convert EPUB to PDF and Markdown
+
+on:
+  workflow_dispatch:
+    inputs:
+      pattern:
+        description: "EPUB glob pattern (default *.epub)"
+        required: false
+        default: "*.epub"
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc calibre
+
+      - name: Convert EPUBs
+        run: |
+          set -e
+          mkdir -p exports
+          shopt -s nullglob
+          for f in ${GITHUB_INPUT_PATTERN:-*.epub}; do
+            base=$(basename "$f" .epub)
+            echo "Converting $f -> exports/${base}.md/pdf"
+            pandoc "$f" -t markdown -o "exports/${base}.md"
+            # Extract a simple TOC from markdown headings (best-effort)
+            grep -E '^#{1,6} ' "exports/${base}.md" | sed 's/^#\+ //' > "exports/${base}_toc.txt" || true
+            # Convert to PDF using Calibre's ebook-convert (more reliable than wkhtmltopdf here)
+            ebook-convert "$f" "exports/${base}.pdf" --embed-all-fonts --enable-heuristics --pdf-add-toc || true
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: epub-exports
+          path: exports
+
