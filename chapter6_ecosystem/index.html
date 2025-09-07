@@ -1,0 +1,1077 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../chapter5_concurrency/">
+      
+      
+        <link rel="next" href="../chapter7_engineering/">
+      
+      
+      <link rel="icon" href="../assets/螃蟹.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>第六章：项目与生态 - Rust 100 问</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="Rust 100 问" class="md-header__button md-logo" aria-label="Rust 100 问" data-md-component="logo">
+      
+  <img src="../assets/螃蟹.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Rust 100 问
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第六章：项目与生态
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Rust 100 问" class="md-nav__button md-logo" aria-label="Rust 100 问" data-md-component="logo">
+      
+  <img src="../assets/螃蟹.png" alt="logo">
+
+    </a>
+    Rust 100 问
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    首页
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter1_basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第一章：入门与基础
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter2_ownership/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第二章：核心概念：所有权与生命周期
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter3_collections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第三章：复合类型与集合
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter4_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第四章：高级特性
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter5_concurrency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第五章：并发与异步
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    第六章：项目与生态
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    第六章：项目与生态
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#86-rust" class="md-nav__link">
+    <span class="md-ellipsis">
+      86. 如何在 Rust 中组织一个复杂的项目？模块系统是如何工作的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#87-pub" class="md-nav__link">
+    <span class="md-ellipsis">
+      87. pub 关键字是做什么的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#88-crate-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      88. 什么是 Crate？它和 Module 有什么区别？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#89-crate" class="md-nav__link">
+    <span class="md-ellipsis">
+      89. 如何使用外部的 Crate？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#90-resultt-e" class="md-nav__link">
+    <span class="md-ellipsis">
+      90. Result&lt;T, E&gt; 枚举是什么？它如何用于错误处理？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#91-panic-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      91. panic! 和 Result 有什么区别？应该在什么时候使用它们？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#92" class="md-nav__link">
+    <span class="md-ellipsis">
+      92. ? 运算符是做什么用的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#93-rust" class="md-nav__link">
+    <span class="md-ellipsis">
+      93. 如何在 Rust 中编写测试？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#94-assertassert_eq-assert_ne" class="md-nav__link">
+    <span class="md-ellipsis">
+      94. assert!、assert_eq! 和 assert_ne! 宏有什么区别？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#95-doc-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      95. 什么是文档测试 (Doc Tests)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#96-benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      96. 什么是基准测试 (Benchmarking)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#97-cargo-workspaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      97. 什么是 Cargo 工作空间 (Workspaces)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#98-crate-cratesio" class="md-nav__link">
+    <span class="md-ellipsis">
+      98. 如何发布我自己的 Crate 到 crates.io？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#99-rust-crate" class="md-nav__link">
+    <span class="md-ellipsis">
+      99. Rust 生态中有哪些必知的 Crate？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rust" class="md-nav__link">
+    <span class="md-ellipsis">
+      100. 学习 Rust 的下一步是什么？
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter7_engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第七章：工程与进阶专题
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    关于
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#86-rust" class="md-nav__link">
+    <span class="md-ellipsis">
+      86. 如何在 Rust 中组织一个复杂的项目？模块系统是如何工作的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#87-pub" class="md-nav__link">
+    <span class="md-ellipsis">
+      87. pub 关键字是做什么的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#88-crate-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      88. 什么是 Crate？它和 Module 有什么区别？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#89-crate" class="md-nav__link">
+    <span class="md-ellipsis">
+      89. 如何使用外部的 Crate？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#90-resultt-e" class="md-nav__link">
+    <span class="md-ellipsis">
+      90. Result&lt;T, E&gt; 枚举是什么？它如何用于错误处理？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#91-panic-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      91. panic! 和 Result 有什么区别？应该在什么时候使用它们？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#92" class="md-nav__link">
+    <span class="md-ellipsis">
+      92. ? 运算符是做什么用的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#93-rust" class="md-nav__link">
+    <span class="md-ellipsis">
+      93. 如何在 Rust 中编写测试？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#94-assertassert_eq-assert_ne" class="md-nav__link">
+    <span class="md-ellipsis">
+      94. assert!、assert_eq! 和 assert_ne! 宏有什么区别？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#95-doc-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      95. 什么是文档测试 (Doc Tests)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#96-benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      96. 什么是基准测试 (Benchmarking)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#97-cargo-workspaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      97. 什么是 Cargo 工作空间 (Workspaces)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#98-crate-cratesio" class="md-nav__link">
+    <span class="md-ellipsis">
+      98. 如何发布我自己的 Crate 到 crates.io？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#99-rust-crate" class="md-nav__link">
+    <span class="md-ellipsis">
+      99. Rust 生态中有哪些必知的 Crate？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rust" class="md-nav__link">
+    <span class="md-ellipsis">
+      100. 学习 Rust 的下一步是什么？
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">第六章：项目与生态</h1>
+<p>恭喜你！来到了本书的最后一章。本章我们将学习如何组织大型项目、编写有效的测试、处理错误，并了解 Rust 强大的生态系统，包括如何使用和发布 crate。</p>
+<hr />
+<p>示意图：工作空间与发布流水线</p>
+<pre class="mermaid"><code>flowchart LR
+  subgraph Workspace
+    A[Root Cargo.toml] --&gt; M1[成员 crate]
+    A --&gt; M2[共享依赖]
+  end
+  CI[CI Pipeline] --&gt; FMT[cargo fmt]
+  CI --&gt; CLP[clippy]
+  CI --&gt; TEST[cargo test]
+  CI --&gt; PKG[cargo package]
+  PKG --&gt; PUB[cargo publish]</code></pre>
+<h3 id="86-rust">86. 如何在 Rust 中组织一个复杂的项目？模块系统是如何工作的？</h3>
+<p><strong>答：</strong>
+Rust 有一个强大的模块系统，可以帮助你将代码组织成多个文件和目录。
+- <strong>Crate</strong>: 是 Rust 的编译单元。一个 crate 可以是一个二进制程序或一个库。
+- <strong>Module</strong>: 使用 <code>mod</code> 关键字，你可以在一个文件中定义一个模块，或者从另一个文件加载一个模块。
+- <strong><code>src/main.rs</code></strong>: 是二进制 crate 的 crate root。
+- <strong><code>src/lib.rs</code></strong>: 是库 crate 的 crate root。</p>
+<p><strong>文件结构示例:</strong>
+<div class="highlight"><pre><span></span><code>src/
+├── main.rs
+├── lib.rs
+└── front_of_house/
+    ├── hosting.rs
+    └── serving.rs
+</code></pre></div></p>
+<p><strong><code>src/lib.rs</code>:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// 从 front_of_house/hosting.rs 加载模块</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">front_of_house</span><span class="p">;</span><span class="w"> </span>
+
+<span class="c1">// 使用 pub use 重新导出，方便外部调用</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="k">crate</span><span class="p">::</span><span class="n">front_of_house</span><span class="p">::</span><span class="n">hosting</span><span class="p">;</span>
+
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">eat_at_restaurant</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">hosting</span><span class="p">::</span><span class="n">add_to_waitlist</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<strong><code>src/front_of_house/hosting.rs</code>:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">add_to_waitlist</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+</code></pre></div>
+使用 <code>use</code> 关键字可以将路径引入作用域，从而使用更短的名称来调用函数。</p>
+<hr />
+<p>进阶示例：模块可见性、<code>pub(crate)</code> 与重导出
+<div class="highlight"><pre><span></span><code><span class="c1">// lib.rs</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="p">(</span><span class="k">crate</span><span class="p">)</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">helper</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="k">pub</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">util</span><span class="p">::</span><span class="n">helper</span><span class="p">;</span><span class="w"> </span><span class="c1">// 重新导出为公共 API</span>
+</code></pre></div></p>
+<h3 id="87-pub">87. <code>pub</code> 关键字是做什么的？</h3>
+<p><strong>答：</strong>
+<code>pub</code> 关键字用于将模块、函数、结构体、枚举等标记为<strong>公共的 (public)</strong>，这意味着模块外的代码可以访问它们。默认情况下，Rust 中的所有项都是<strong>私有的 (private)</strong>。</p>
+<ul>
+<li><code>pub fn my_function()</code>: 使函数变为公共。</li>
+<li><code>pub struct MyStruct</code>: 使结构体变为公共，但它的<strong>字段</strong>默认仍然是私有的。你必须在每个需要公开的字段前也加上 <code>pub</code>。</li>
+<li><code>pub enum MyEnum</code>: 使枚举变为公共，它的<strong>所有变体</strong>也都会自动变为公共。</li>
+</ul>
+<hr />
+<h3 id="88-crate-module">88. 什么是 Crate？它和 Module 有什么区别？</h3>
+<p><strong>答：</strong>
+- <strong>Crate</strong>: 是一个独立的、可编译的单元。它可以生成一个可执行文件（二进制 crate）或一个可被其他项目用作依赖的库（库 crate）。<code>cargo build</code> 或 <code>cargo run</code> 命令操作的对象就是一个 crate。
+- <strong>Module</strong>: 是在一个 crate 内部组织代码的一种方式。它定义了一个命名空间，可以包含函数、结构体以及其他模块。模块帮助你控制代码的组织和可见性（私有/公共）。</p>
+<p>简单来说：一个项目（包）包含一个或多个 crate，一个 crate 包含一个或多个 module。</p>
+<hr />
+<h3 id="89-crate">89. 如何使用外部的 Crate？</h3>
+<p><strong>答：</strong>
+通过 <code>Cargo.toml</code> 文件。
+1.  在 <code>Cargo.toml</code> 的 <code>[dependencies]</code> 部分添加你需要的 crate 和版本号。
+    <div class="highlight"><pre><span></span><code><span class="k">[dependencies]</span>
+<span class="n">rand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.8.5&quot;</span>
+</code></pre></div>
+2.  运行 <code>cargo build</code>，Cargo 会自动从 <a href="https://crates.io">crates.io</a>（Rust 的官方包仓库）下载并编译这个依赖。
+3.  在你的代码中使用 <code>use</code> 关键字来引入这个 crate 的功能。
+    <div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">rand</span><span class="p">::</span><span class="n">Rng</span><span class="p">;</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">rng</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rand</span><span class="p">::</span><span class="n">thread_rng</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">n</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rng</span><span class="p">.</span><span class="n">gen_range</span><span class="p">(</span><span class="mi">1</span><span class="o">..=</span><span class="mi">100</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Random number: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="90-resultt-e">90. <code>Result&lt;T, E&gt;</code> 枚举是什么？它如何用于错误处理？</h3>
+<p><strong>答：</strong>
+<code>Result&lt;T, E&gt;</code> 是标准库中用于可恢复错误处理的核心枚举。
+<div class="highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="n">T</span><span class="p">),</span><span class="w">  </span><span class="c1">// 表示操作成功，并包含一个 T 类型的值</span>
+<span class="w">    </span><span class="nb">Err</span><span class="p">(</span><span class="n">E</span><span class="p">),</span><span class="w"> </span><span class="c1">// 表示操作失败，并包含一个 E 类型的错误信息</span>
+<span class="p">}</span>
+</code></pre></div>
+函数在可能失败时，应该返回 <code>Result</code> 类型。这强制调用者必须处理错误的可能性，从而使代码更健壮。你可以使用 <code>match</code>、<code>if let</code> 或更简洁的 <code>?</code> 运算符来处理 <code>Result</code>。</p>
+<hr />
+<p>进阶示例：<code>thiserror</code> 定义库错误，<code>anyhow</code> 用于应用层
+<div class="highlight"><pre><span></span><code><span class="c1">// Cargo.toml</span>
+<span class="c1">// thiserror = &quot;1&quot;, anyhow = &quot;1&quot;</span>
+
+<span class="k">use</span><span class="w"> </span><span class="n">thiserror</span><span class="p">::</span><span class="n">Error</span><span class="p">;</span>
+
+<span class="cp">#[derive(Debug, Error)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">MyError</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cp">#[error(</span><span class="s">&quot;io error: {0}&quot;</span><span class="cp">)]</span><span class="w"> </span><span class="n">Io</span><span class="p">(</span><span class="cp">#[from]</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">io</span><span class="p">::</span><span class="n">Error</span><span class="p">),</span>
+<span class="w">    </span><span class="cp">#[error(</span><span class="s">&quot;parse int error: {0}&quot;</span><span class="cp">)]</span><span class="w"> </span><span class="n">Parse</span><span class="p">(</span><span class="cp">#[from]</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">num</span><span class="p">::</span><span class="n">ParseIntError</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">parse_num</span><span class="p">(</span><span class="n">s</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="n">MyError</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">trim</span><span class="p">().</span><span class="n">parse</span><span class="p">()</span><span class="o">?</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">anyhow</span><span class="p">::</span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parse_num</span><span class="p">(</span><span class="s">&quot;42&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="91-panic-result">91. <code>panic!</code> 和 <code>Result</code> 有什么区别？应该在什么时候使用它们？</h3>
+<p><strong>答：</strong>
+- <strong><code>panic!</code></strong>: 用于不可恢复的错误。当 <code>panic!</code> 被调用时，程序会立即停止执行，展开并清理栈，然后退出。它应该用于表示程序进入了一个它无法处理的、不应该发生的状态（例如，编程 bug）。
+- <strong><code>Result&lt;T, E&gt;</code></strong>: 用于可恢复的错误。当一个错误是可预期的，并且调用者应该有能力去处理它时（例如，文件未找到、网络请求失败），你应该返回一个 <code>Result</code>。</p>
+<p><strong>经验法则</strong>：如果一个函数因为调用者传递了不合法的值而失败，那么 <code>panic!</code> 是合适的。如果失败的原因来自外部环境，那么返回 <code>Result</code> 更合适。</p>
+<hr />
+<h3 id="92">92. <code>?</code> 运算符是做什么用的？</h3>
+<p><strong>答：</strong>
+<code>?</code> 运算符是用于<strong>错误传播</strong>的语法糖。它可以极大地简化处理 <code>Result</code> 和 <code>Option</code> 的代码。</p>
+<p>当你在一个 <code>Result</code> 值后面使用 <code>?</code> 时：
+- 如果 <code>Result</code> 是 <code>Ok(value)</code>，它会解包 <code>Result</code> 并将 <code>value</code> 作为表达式的结果。
+- 如果 <code>Result</code> 是 <code>Err(e)</code>，它会立即从当前函数返回，并将这个 <code>Err(e)</code> 作为整个函数的返回值。</p>
+<p><code>?</code> 运算符只能在返回 <code>Result</code> 或 <code>Option</code>（或其他实现了 <code>Try</code> trait 的类型）的函数中使用。</p>
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">fs</span><span class="p">::</span><span class="n">File</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">io</span><span class="p">::{</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">Read</span><span class="p">};</span>
+
+<span class="c1">// 使用 `?` 运算符，代码非常简洁</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">read_username_from_file</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">io</span><span class="p">::</span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">username_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">File</span><span class="p">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+<span class="w">    </span><span class="n">username_file</span><span class="p">.</span><span class="n">read_to_string</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">username</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h3 id="93-rust">93. 如何在 Rust 中编写测试？</h3>
+<p><strong>答：</strong>
+Rust 内置了对单元测试和集成测试的支持。
+- <strong>单元测试 (Unit Tests):</strong> 通常与被测试的代码放在同一个文件中，位于一个标记了 <code>#[cfg(test)]</code> 的 <code>mod tests</code> 模块里。它们用于测试私有函数。
+- <strong>集成测试 (Integration Tests):</strong> 位于项目根目录下的 <code>tests</code> 文件夹中。每个 <code>.rs</code> 文件都是一个独立的 crate。它们只能测试库的公共 API。</p>
+<p>测试函数需要用 <code>#[test]</code> 属性来标注。</p>
+<p><div class="highlight"><pre><span></span><code><span class="c1">// 在 `src/lib.rs` 中</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">add_two</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">}</span>
+
+<span class="cp">#[cfg(test)]</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">tests</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="k">super</span><span class="p">::</span><span class="o">*</span><span class="p">;</span><span class="w"> </span><span class="c1">// 引入外部模块</span>
+
+<span class="w">    </span><span class="cp">#[test]</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">it_adds_two</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">assert_eq!</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">add_two</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cp">#[test]</span>
+<span class="w">    </span><span class="cp">#[should_panic]</span><span class="w"> </span><span class="c1">// 测试应该 panic 的情况</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">it_panics</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+使用 <code>cargo test</code> 来运行所有测试。</p>
+<hr />
+<h3 id="94-assertassert_eq-assert_ne">94. <code>assert!</code>、<code>assert_eq!</code> 和 <code>assert_ne!</code> 宏有什么区别？</h3>
+<p><strong>答：</strong>
+它们都是在测试中常用的断言宏：
+- <strong><code>assert!(expression)</code></strong>: 接受一个布尔表达式。如果表达式为 <code>true</code>，测试通过；如果为 <code>false</code>，则 <code>panic</code>。
+- <strong><code>assert_eq!(left, right)</code></strong>: 比较两个参数是否相等。如果 <code>left == right</code>，测试通过。如果不等，它会 <code>panic</code> 并清晰地打印出两个参数的值，方便调试。
+- <strong><code>assert_ne!(left, right)</code></strong>: 比较两个参数是否不相等。如果 <code>left != right</code>，测试通过。</p>
+<p>在大多数情况下，<code>assert_eq!</code> 和 <code>assert_ne!</code> 比 <code>assert!</code> 更好，因为它们能在失败时提供更多的上下文信息。</p>
+<hr />
+<h3 id="95-doc-tests">95. 什么是文档测试 (Doc Tests)？</h3>
+<p><strong>答：</strong>
+文档测试是写在文档注释 (<code>///</code>) 中的代码示例。Rust 的测试工具 <code>cargo test</code> 会自动提取这些代码示例，将它们编译并作为测试来运行。</p>
+<p>这是一种非常强大的功能，它保证了你的文档示例永远不会过时或包含错误。</p>
+<p><div class="highlight"><pre><span></span><code><span class="sd">/// Adds two to the number given.</span>
+<span class="sd">///</span>
+<span class="sd">/// # Examples</span>
+<span class="sd">///</span>
+<span class="sd">/// ```</span>
+<span class="sd">/// let arg = 5;</span>
+<span class="sd">/// let answer = my_crate::add_two(arg);</span>
+<span class="sd">///</span>
+<span class="sd">/// assert_eq!(7, answer);</span>
+<span class="sd">/// ```</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">add_two</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">}</span>
+</code></pre></div>
+运行 <code>cargo test</code> 时，上面 <code>Examples</code> 部分的代码就会被执行。</p>
+<hr />
+<p>进阶示例：测试夹具与 <code>#[test]</code> 辅助函数
+<div class="highlight"><pre><span></span><code><span class="c1">// tests/common/mod.rs</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* create temp dirs, set env, etc. */</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// tests/integration.rs</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">common</span><span class="p">;</span>
+
+<span class="cp">#[test]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">it_works</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">common</span><span class="p">::</span><span class="n">setup</span><span class="p">();</span>
+<span class="w">    </span><span class="fm">assert_eq!</span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="96-benchmarking">96. 什么是基准测试 (Benchmarking)？</h3>
+<p><strong>答：</strong>
+基准测试用于衡量代码的运行速度。Rust 的标准测试工具目前还不支持稳定的基准测试。你需要使用 nightly 版本的 Rust 编译器，或者使用社区开发的库。</p>
+<p>最流行的基准测试库是 <strong><code>Criterion</code></strong>。你需要将它添加到 <code>[dev-dependencies]</code> 中，并在 <code>benches</code> 目录下创建基准测试文件。</p>
+<hr />
+<h3 id="97-cargo-workspaces">97. 什么是 Cargo 工作空间 (Workspaces)？</h3>
+<p><strong>答：</strong>
+工作空间可以帮助你管理多个相互关联的、需要协同开发的 crate。一个工作空间有一个顶层的 <code>Cargo.toml</code> 文件，它不包含 <code>[package]</code> 部分，而是定义了工作空间的成员。</p>
+<p>所有在工作空间中的 crate 共享一个 <code>target</code> 目录（存放编译结果）和一个 <code>Cargo.lock</code> 文件。这可以节省编译时间并保证所有 crate 使用相同版本的依赖。</p>
+<hr />
+<p>进阶示例：工作空间顶层配置与成员
+<div class="highlight"><pre><span></span><code><span class="c1"># Cargo.toml (workspace root)</span>
+<span class="k">[workspace]</span>
+<span class="n">members</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;crates/app&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;crates/lib&quot;</span><span class="p">]</span>
+<span class="n">resolver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;2&quot;</span>
+
+<span class="k">[workspace.package]</span>
+<span class="n">edition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;2021&quot;</span>
+
+<span class="k">[workspace.dependencies]</span>
+<span class="n">serde</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">features</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;derive&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div></p>
+<h3 id="98-crate-cratesio">98. 如何发布我自己的 Crate 到 crates.io？</h3>
+<p><strong>答：</strong>
+1.  <strong>登录:</strong> 使用 <code>cargo login</code> 命令，并粘贴从 <a href="https://crates.io/me">crates.io</a> 获取的 API token。
+2.  <strong>添加元数据:</strong> 确保你的 <code>Cargo.toml</code> 文件中包含了必要的元数据，如 <code>name</code>, <code>version</code>, <code>authors</code>, <code>description</code>, <code>license</code>。
+3.  <strong>打包:</strong> 运行 <code>cargo package</code> 可以检查你的包是否能成功构建并打包成 <code>.crate</code> 文件。
+4.  <strong>发布:</strong> 运行 <code>cargo publish</code>。这会上传你的 <code>.crate</code> 文件到 crates.io。</p>
+<p>注意：发布一个版本是<strong>永久性的</strong>，你不能覆盖它，只能发布新的版本。</p>
+<hr />
+<p>进阶示例：发布前自检清单
+<div class="highlight"><pre><span></span><code>cargo<span class="w"> </span>fmt<span class="w"> </span>--all<span class="w"> </span>--<span class="w"> </span>--check
+cargo<span class="w"> </span>clippy<span class="w"> </span>--all-targets<span class="w"> </span>--all-features<span class="w"> </span>--<span class="w"> </span>-D<span class="w"> </span>warnings
+cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--all<span class="w"> </span>--all-features
+cargo<span class="w"> </span>publish<span class="w"> </span>--dry-run
+</code></pre></div></p>
+<h3 id="99-rust-crate">99. Rust 生态中有哪些必知的 Crate？</h3>
+<p><strong>答：</strong>
+Rust 的生态系统非常丰富。以下是一些几乎在所有领域都会遇到的核心 crate：
+- <strong><code>serde</code></strong>: 用于高效、通用地序列化和反序列化 Rust 数据结构（例如，转换成 JSON）。
+- <strong><code>rand</code></strong>: 提供随机数生成功能。
+- <strong><code>regex</code></strong>: 官方维护的正则表达式库。
+- <strong><code>tokio</code> / <code>async-std</code></strong>: 异步运行时。
+- <strong><code>slog</code> / <code>log</code> + <code>env_logger</code></strong>: 用于日志记录。
+- <strong><code>clap</code> / <code>structopt</code></strong>: 用于构建强大的命令行应用。
+- <strong><code>anyhow</code> / <code>thiserror</code></strong>: 用于更灵活、更易于使用的错误处理。
+- <strong><code>reqwest</code></strong>: 一个强大、易用的 HTTP 客户端。
+- <strong><code>actix-web</code> / <code>rocket</code> / <code>axum</code></strong>: 用于构建 Web 服务的框架。</p>
+<hr />
+<h3 id="100-rust">100. 学习 Rust 的下一步是什么？</h3>
+<p><strong>答：</strong>
+恭喜你完成了 100 问！你已经掌握了 Rust 的核心。下一步是<strong>实践</strong>。
+1.  <strong>做项目:</strong> 尝试用 Rust 写一些你感兴趣的东西，比如一个命令行工具、一个简单的 Web 服务器、一个小游戏等。
+2.  <strong>阅读代码:</strong> 阅读一些优秀开源项目的代码，比如 <code>ripgrep</code>、<code>fd</code> 等，学习别人是如何组织代码和解决问题的。
+3.  <strong>参与社区:</strong> 加入 Rust 的社区论坛（users.rust-lang.org）、Discord 或 Reddit，提问并帮助他人。
+4.  <strong>深入探索:</strong> 阅读《The Rustonomicon》来了解不安全 Rust 的世界，或者阅读《Async Programming in Rust》来深入理解异步。</p>
+<p>祝你在 Rust 的世界里探索愉快！</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      
+        <script src="../assets/mermaid-init.js"></script>
+      
+    
+  </body>
+</html>

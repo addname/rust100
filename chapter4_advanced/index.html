@@ -1,0 +1,1312 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../chapter3_collections/">
+      
+      
+        <link rel="next" href="../chapter5_concurrency/">
+      
+      
+      <link rel="icon" href="../assets/螃蟹.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>第四章：高级特性 - Rust 100 问</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="Rust 100 问" class="md-header__button md-logo" aria-label="Rust 100 问" data-md-component="logo">
+      
+  <img src="../assets/螃蟹.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Rust 100 问
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第四章：高级特性
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Rust 100 问" class="md-nav__button md-logo" aria-label="Rust 100 问" data-md-component="logo">
+      
+  <img src="../assets/螃蟹.png" alt="logo">
+
+    </a>
+    Rust 100 问
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    首页
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter1_basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第一章：入门与基础
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter2_ownership/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第二章：核心概念：所有权与生命周期
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter3_collections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第三章：复合类型与集合
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    第四章：高级特性
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    第四章：高级特性
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#56-generics" class="md-nav__link">
+    <span class="md-ellipsis">
+      56. 什么是泛型 (Generics)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#57-trait-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      57. 什么是 Trait？它和接口 (Interface) 有什么关系？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#58-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      58. 如何使用 Trait 作为函数参数？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#59-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      59. 如何返回实现了 Trait 的类型？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#60-smart-pointers" class="md-nav__link">
+    <span class="md-ellipsis">
+      60. 什么是智能指针 (Smart Pointers)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#61-boxt" class="md-nav__link">
+    <span class="md-ellipsis">
+      61. Box&lt;T&gt; 是什么？它有什么用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-rct-boxt" class="md-nav__link">
+    <span class="md-ellipsis">
+      62. Rc&lt;T&gt; 是什么？它和 Box&lt;T&gt; 有什么不同？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#63-refcellt" class="md-nav__link">
+    <span class="md-ellipsis">
+      63. RefCell&lt;T&gt; 和内部可变性是什么？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#64-rcrefcellt" class="md-nav__link">
+    <span class="md-ellipsis">
+      64. 为什么需要 Rc&lt;RefCell&lt;T&gt;&gt; 这种组合？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#65-closures" class="md-nav__link">
+    <span class="md-ellipsis">
+      65. 什么是闭包 (Closures)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#66" class="md-nav__link">
+    <span class="md-ellipsis">
+      66. 闭包如何捕获环境？有哪几种方式？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#67-move" class="md-nav__link">
+    <span class="md-ellipsis">
+      67. move 关键字在闭包中有什么用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#68-iterators" class="md-nav__link">
+    <span class="md-ellipsis">
+      68. 什么是迭代器 (Iterators)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#69" class="md-nav__link">
+    <span class="md-ellipsis">
+      69. 消耗型适配器和迭代器适配器有什么区别？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#70-deref-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      70. Deref trait 是如何工作的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#71-drop-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      71. Drop trait 是如何工作的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#72-trait-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      72. 什么是 Trait Object？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#73" class="md-nav__link">
+    <span class="md-ellipsis">
+      73. 动态分发和静态分发有什么区别？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#74-asref-asmut-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      74. AsRef 和 AsMut trait 有什么用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#75-newtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      75. 什么是 newtype 模式？
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter5_concurrency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第五章：并发与异步
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter6_ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第六章：项目与生态
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter7_engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第七章：工程与进阶专题
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    关于
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#56-generics" class="md-nav__link">
+    <span class="md-ellipsis">
+      56. 什么是泛型 (Generics)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#57-trait-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      57. 什么是 Trait？它和接口 (Interface) 有什么关系？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#58-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      58. 如何使用 Trait 作为函数参数？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#59-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      59. 如何返回实现了 Trait 的类型？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#60-smart-pointers" class="md-nav__link">
+    <span class="md-ellipsis">
+      60. 什么是智能指针 (Smart Pointers)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#61-boxt" class="md-nav__link">
+    <span class="md-ellipsis">
+      61. Box&lt;T&gt; 是什么？它有什么用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-rct-boxt" class="md-nav__link">
+    <span class="md-ellipsis">
+      62. Rc&lt;T&gt; 是什么？它和 Box&lt;T&gt; 有什么不同？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#63-refcellt" class="md-nav__link">
+    <span class="md-ellipsis">
+      63. RefCell&lt;T&gt; 和内部可变性是什么？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#64-rcrefcellt" class="md-nav__link">
+    <span class="md-ellipsis">
+      64. 为什么需要 Rc&lt;RefCell&lt;T&gt;&gt; 这种组合？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#65-closures" class="md-nav__link">
+    <span class="md-ellipsis">
+      65. 什么是闭包 (Closures)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#66" class="md-nav__link">
+    <span class="md-ellipsis">
+      66. 闭包如何捕获环境？有哪几种方式？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#67-move" class="md-nav__link">
+    <span class="md-ellipsis">
+      67. move 关键字在闭包中有什么用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#68-iterators" class="md-nav__link">
+    <span class="md-ellipsis">
+      68. 什么是迭代器 (Iterators)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#69" class="md-nav__link">
+    <span class="md-ellipsis">
+      69. 消耗型适配器和迭代器适配器有什么区别？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#70-deref-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      70. Deref trait 是如何工作的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#71-drop-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      71. Drop trait 是如何工作的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#72-trait-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      72. 什么是 Trait Object？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#73" class="md-nav__link">
+    <span class="md-ellipsis">
+      73. 动态分发和静态分发有什么区别？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#74-asref-asmut-trait" class="md-nav__link">
+    <span class="md-ellipsis">
+      74. AsRef 和 AsMut trait 有什么用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#75-newtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      75. 什么是 newtype 模式？
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">第四章：高级特性</h1>
+<p>本章将深入探讨使 Rust 成为一门富有表现力且功能强大的语言的高级特性。我们将涵盖泛型、trait、智能指针、闭包和迭代器。</p>
+<hr />
+<p>示意图：智能指针生态与关系</p>
+<pre class="mermaid"><code>graph LR
+  Box --&gt; Heap[堆分配]
+  Rc --&gt; Owners[多所有者]
+  Arc --&gt; ThreadSafe[线程安全多所有者]
+  RefCell --&gt; BorrowCheck[运行时借用检查]
+  Cell --&gt; CellSet[按值 set]
+  Rc --&gt; RefCell
+  Arc --&gt; Mutex
+  Mutex --&gt; Exclusive[互斥访问]
+  RwLock --&gt; RW[多读单写]</code></pre>
+<h3 id="56-generics">56. 什么是泛型 (Generics)？</h3>
+<p><strong>答：</strong>
+泛型是一种编程语言特性，它允许我们在定义函数、结构体、枚举等时不指定具体的类型，而是使用一个抽象的“类型参数”。这使得我们可以编写更灵活、可重用且不会牺牲类型安全的代码。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 泛型函数：T 可以是任何类型</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">identity</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">item</span><span class="p">:</span><span class="w"> </span><span class="nc">T</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">T</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">item</span>
+<span class="p">}</span>
+
+<span class="c1">// 泛型结构体：可以持有任何类型的 x 和 y</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">integer_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Point</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">};</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">float_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Point</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="w"> </span><span class="p">};</span>
+</code></pre></div>
+<p>进阶示例：trait bound、where 子句与 const generics
+<div class="highlight"><pre><span></span><code><span class="c1">// 使用 trait bound 约束 T 必须可比较和可显示</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">max_display</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">:</span><span class="w"> </span><span class="nc">T</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">T</span>
+<span class="k">where</span>
+<span class="w">    </span><span class="n">T</span><span class="p">:</span><span class="w"> </span><span class="nc">std</span><span class="p">::</span><span class="n">cmp</span><span class="p">::</span><span class="nb">Ord</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">fmt</span><span class="p">::</span><span class="n">Display</span><span class="p">,</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;max = {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">);</span>
+<span class="w">    </span><span class="n">m</span>
+<span class="p">}</span>
+
+<span class="c1">// const generics：在类型层面携带常量参数</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">FixedVec</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">N</span><span class="p">:</span><span class="w"> </span><span class="kt">usize</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">T</span><span class="p">;</span><span class="w"> </span><span class="n">N</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span><span class="w"> </span><span class="nb">Default</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">Copy</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">N</span><span class="p">:</span><span class="w"> </span><span class="kt">usize</span><span class="o">&gt;</span><span class="w"> </span><span class="n">FixedVec</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">new</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">Self</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">Self</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">T</span><span class="p">::</span><span class="n">default</span><span class="p">();</span><span class="w"> </span><span class="n">N</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="57-trait-interface">57. 什么是 Trait？它和接口 (Interface) 有什么关系？</h3>
+<p><strong>答：</strong>
+Trait 用于告诉 Rust 编译器某种类型具有哪些并且可以与其它类型共享的功能。它类似于其他语言中的接口（Interface），用于定义共享的行为。</p>
+<p><div class="highlight"><pre><span></span><code><span class="k">pub</span><span class="w"> </span><span class="k">trait</span><span class="w"> </span><span class="n">Summary</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">summarize_author</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// 带有默认实现的方法</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">format!</span><span class="p">(</span><span class="s">&quot;(Read more from {}...)&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">summarize_author</span><span class="p">())</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+一个类型可以通过 <code>impl Trait for Type</code> 的语法来实现一个 trait，从而保证该类型拥有 trait 中定义的所有方法。</p>
+<p>进阶示例：为多种类型实现 trait，重写默认方法
+<div class="highlight"><pre><span></span><code><span class="k">pub</span><span class="w"> </span><span class="k">trait</span><span class="w"> </span><span class="n">Summary</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">summarize_author</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="p">;</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="fm">format!</span><span class="p">(</span><span class="s">&quot;(more from {})&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">summarize_author</span><span class="p">())</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Article</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">pub</span><span class="w"> </span><span class="n">author</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="k">pub</span><span class="w"> </span><span class="n">title</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">}</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Tweet</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">pub</span><span class="w"> </span><span class="n">user</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="k">pub</span><span class="w"> </span><span class="n">content</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Summary</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Article</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">summarize_author</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">author</span><span class="p">.</span><span class="n">clone</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="fm">format!</span><span class="p">(</span><span class="s">&quot;{} - {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">author</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Summary</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Tweet</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">summarize_author</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">user</span><span class="p">.</span><span class="n">clone</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="58-trait">58. 如何使用 Trait 作为函数参数？</h3>
+<p><strong>答：</strong>
+你可以使用 <code>impl Trait</code> 语法或“trait bound”语法，来接受任何实现了特定 trait 的类型作为参数。</p>
+<p><div class="highlight"><pre><span></span><code><span class="c1">// 使用 impl Trait (更简洁)</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">notify</span><span class="p">(</span><span class="n">item</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">impl</span><span class="w"> </span><span class="n">Summary</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Breaking news! {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">item</span><span class="p">.</span><span class="n">summarize</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="c1">// 使用 trait bound (更通用，适用于复杂情况)</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">notify_long</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span><span class="w"> </span><span class="nc">Summary</span><span class="o">&gt;</span><span class="p">(</span><span class="n">item</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Breaking news! {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">item</span><span class="p">.</span><span class="n">summarize</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div>
+这使得函数可以接受多种不同类型的值，只要它们都实现了 <code>Summary</code> trait。</p>
+<hr />
+<h3 id="59-trait">59. 如何返回实现了 Trait 的类型？</h3>
+<p><strong>答：</strong>
+你也可以在返回值位置使用 <code>impl Trait</code>，来返回一个实现了某个 trait 的具体类型，而无需写出该类型的确切名称。</p>
+<p>这对于返回闭包或迭代器这类类型特别有用，因为它们的具体类型可能非常复杂，甚至无法写出。</p>
+<div class="highlight"><pre><span></span><code><span class="k">fn</span><span class="w"> </span><span class="nf">returns_summarizable</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">impl</span><span class="w"> </span><span class="n">Summary</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Tweet</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Tweet 是一个实现了 Summary 的结构体</span>
+<span class="w">        </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;horse_ebooks&quot;</span><span class="p">),</span>
+<span class="w">        </span><span class="n">content</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;of course, as you probably already know, people&quot;</span><span class="p">),</span>
+<span class="w">        </span><span class="n">reply</span><span class="p">:</span><span class="w"> </span><span class="nc">false</span><span class="p">,</span>
+<span class="w">        </span><span class="n">retweet</span><span class="p">:</span><span class="w"> </span><span class="nc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>进阶示例：返回闭包与迭代器
+<div class="highlight"><pre><span></span><code><span class="c1">// 返回闭包（使用 impl Trait 隐藏复杂返回类型）</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">make_adder</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">impl</span><span class="w"> </span><span class="nb">Fn</span><span class="p">(</span><span class="kt">i32</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">move</span><span class="w"> </span><span class="o">|</span><span class="n">y</span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// 返回迭代器（链式适配器）</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">evens_up_to</span><span class="p">(</span><span class="n">n</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">impl</span><span class="w"> </span><span class="nb">Iterator</span><span class="o">&lt;</span><span class="n">Item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">u32</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">(</span><span class="mi">0</span><span class="o">..=</span><span class="n">n</span><span class="p">).</span><span class="n">filter</span><span class="p">(</span><span class="o">|</span><span class="n">v</span><span class="o">|</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="60-smart-pointers">60. 什么是智能指针 (Smart Pointers)？</h3>
+<p><strong>答：</strong>
+智能指针是一类数据结构，它们的行为类似于指针，但还拥有额外的元数据和能力。它们通常通过实现 <code>Deref</code> 和 <code>Drop</code> trait 来实现这些功能。</p>
+<ul>
+<li><code>Deref</code> trait 允许智能指针实例的行为像引用一样，这样你就可以编写既适用于智能指针也适用于普通引用的代码。</li>
+<li><code>Drop</code> trait 允许你自定义当智能指针实例离开作用域时运行的代码，通常用于释放资源。</li>
+</ul>
+<p><code>String</code> 和 <code>Vec&lt;T&gt;</code> 实际上就是智能指针。</p>
+<hr />
+<h3 id="61-boxt">61. <code>Box&lt;T&gt;</code> 是什么？它有什么用？</h3>
+<p><strong>答：</strong>
+<code>Box&lt;T&gt;</code> 是最简单的智能指针，它允许你将数据存储在<strong>堆</strong>上而不是栈上，而指针本身留在栈上。</p>
+<p>主要用途：
+1.  当有一个在编译时无法确定大小的类型，而又想在需要确切大小的上下文中使用它时（例如递归类型）。
+2.  当你拥有大量数据并希望转移所有权，但又不希望在移动时复制所有数据时。
+3.  当你希望拥有一个值，只关心它是否实现了某个特定的 trait，而不是它的具体类型时（trait object）。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 递归类型示例：Cons List</span>
+<span class="k">enum</span><span class="w"> </span><span class="nc">List</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Cons</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&gt;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">Nil</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>进阶示例：<code>Box</code> 与 trait object
+<div class="highlight"><pre><span></span><code><span class="k">trait</span><span class="w"> </span><span class="n">Draw</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Draw</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;label: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">draw_widget</span><span class="p">(</span><span class="n">widget</span><span class="p">:</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">Draw</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">widget</span><span class="p">.</span><span class="n">draw</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">w</span><span class="p">:</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">Draw</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Box</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;OK&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">draw_widget</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="62-rct-boxt">62. <code>Rc&lt;T&gt;</code> 是什么？它和 <code>Box&lt;T&gt;</code> 有什么不同？</h3>
+<p><strong>答：</strong>
+<code>Rc&lt;T&gt;</code> 是<strong>引用计数 (Reference Counting)</strong> 智能指针。它允许多个所有者共同拥有同一份数据。</p>
+<ul>
+<li>当克隆 <code>Rc&lt;T&gt;</code> 时，它不会深拷贝数据，而是增加一个引用计数。</li>
+<li>当一个 <code>Rc&lt;T&gt;</code> 实例被 drop 时，引用计数减一。</li>
+<li>只有当引用计数为零时，数据才会被清理。</li>
+</ul>
+<p><code>Rc&lt;T&gt;</code> <strong>只能用于单线程场景</strong>。它与 <code>Box&lt;T&gt;</code> 的核心区别在于，<code>Box&lt;T&gt;</code> 强制执行 Rust 的单一所有权规则，而 <code>Rc&lt;T&gt;</code> 允许多重所有权。</p>
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">rc</span><span class="p">::</span><span class="n">Rc</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">));</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rc</span><span class="p">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">);</span><span class="w"> </span><span class="c1">// 增加引用计数</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rc</span><span class="p">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">);</span><span class="w"> </span><span class="c1">// 再次增加引用计数</span>
+</code></pre></div>
+<p>进阶示例：<code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 与 <code>Weak</code> 打破循环
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">cell</span><span class="p">::</span><span class="n">RefCell</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">rc</span><span class="p">::{</span><span class="n">Rc</span><span class="p">,</span><span class="w"> </span><span class="n">Weak</span><span class="p">};</span>
+
+<span class="cp">#[derive(Debug)]</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="w">    </span><span class="n">parent</span><span class="p">:</span><span class="w"> </span><span class="nc">RefCell</span><span class="o">&lt;</span><span class="n">Weak</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">children</span><span class="p">:</span><span class="w"> </span><span class="nc">RefCell</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">Rc</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;&gt;&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">leaf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">Node</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">parent</span><span class="p">:</span><span class="w"> </span><span class="nc">RefCell</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">Weak</span><span class="p">::</span><span class="n">new</span><span class="p">()),</span><span class="w"> </span><span class="n">children</span><span class="p">:</span><span class="w"> </span><span class="nc">RefCell</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[])</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">branch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">Node</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">parent</span><span class="p">:</span><span class="w"> </span><span class="nc">RefCell</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">Weak</span><span class="p">::</span><span class="n">new</span><span class="p">()),</span><span class="w"> </span><span class="n">children</span><span class="p">:</span><span class="w"> </span><span class="nc">RefCell</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="n">Rc</span><span class="p">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">leaf</span><span class="p">)])</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="o">*</span><span class="n">leaf</span><span class="p">.</span><span class="n">parent</span><span class="p">.</span><span class="n">borrow_mut</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rc</span><span class="p">::</span><span class="n">downgrade</span><span class="p">(</span><span class="o">&amp;</span><span class="n">branch</span><span class="p">);</span><span class="w"> </span><span class="c1">// 使用 Weak 以避免循环引用</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="63-refcellt">63. <code>RefCell&lt;T&gt;</code> 和内部可变性是什么？</h3>
+<p><strong>答：</strong>
+<code>RefCell&lt;T&gt;</code> 是一个在<strong>运行时</strong>而不是编译时强制执行借用规则的智能指针。通常情况下，你不能在拥有一个不可变引用的同时再获取一个可变引用。但 <code>RefCell&lt;T&gt;</code> 允许你这样做。</p>
+<p>这种模式被称为<strong>内部可变性 (Interior Mutability)</strong>，即一个表面上不可变的值，其内部的数据可以被修改。</p>
+<ul>
+<li><code>borrow()</code> 方法返回一个不可变引用 <code>Ref&lt;T&gt;</code>。</li>
+<li><code>borrow_mut()</code> 方法返回一个可变引用 <code>RefMut&lt;T&gt;</code>。</li>
+</ul>
+<p>如果在运行时违反了借用规则（例如，在已有一个可变借用的情况下再次请求可变借用），程序将会 <code>panic</code>。</p>
+<hr />
+<h3 id="64-rcrefcellt">64. 为什么需要 <code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 这种组合？</h3>
+<p><strong>答：</strong>
+<code>Rc&lt;T&gt;</code> 允许多个所有者，但是它是不可变的。你不能在拥有多个 <code>Rc&lt;T&gt;</code> 指针的情况下，获取一个可变引用来修改数据。</p>
+<p>通过将 <code>RefCell&lt;T&gt;</code> 包装在 <code>Rc&lt;T&gt;</code> 内部，即 <code>Rc&lt;RefCell&lt;T&gt;&gt;</code>，你可以实现<strong>拥有多个所有者，并且可以修改数据</strong>。</p>
+<ul>
+<li><code>Rc&lt;T&gt;</code> 负责允许多个所有者。</li>
+<li><code>RefCell&lt;T&gt;</code> 负责提供内部可变性，并确保借用规则在运行时得到遵守。</li>
+</ul>
+<p>这是在单线程环境中创建复杂数据结构（如图、树）时非常常见的模式。</p>
+<hr />
+<h3 id="65-closures">65. 什么是闭包 (Closures)？</h3>
+<p><strong>答：</strong>
+闭包是一种可以捕获其环境的匿名函数。
+- <strong>匿名:</strong> 它们没有函数名。
+- <strong>捕获环境:</strong> 它们可以访问定义它们的作用域中的变量。</p>
+<p><div class="highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">equal_to_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">|</span><span class="n">z</span><span class="o">|</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w"> </span><span class="c1">// 这个闭包捕获了 x</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="fm">assert!</span><span class="p">(</span><span class="n">equal_to_x</span><span class="p">(</span><span class="n">y</span><span class="p">));</span>
+</code></pre></div>
+闭包在 Rust 中被广泛用于迭代器和线程等场景。</p>
+<p>进阶示例：<code>Fn</code>/<code>FnMut</code>/<code>FnOnce</code> 捕获差异
+<div class="highlight"><pre><span></span><code><span class="k">fn</span><span class="w"> </span><span class="nf">call_fn</span><span class="o">&lt;</span><span class="n">F</span><span class="p">:</span><span class="w"> </span><span class="nb">Fn</span><span class="p">()</span><span class="o">&gt;</span><span class="p">(</span><span class="n">f</span><span class="p">:</span><span class="w"> </span><span class="nc">F</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">f</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">call_fn_mut</span><span class="o">&lt;</span><span class="n">F</span><span class="p">:</span><span class="w"> </span><span class="nb">FnMut</span><span class="p">()</span><span class="o">&gt;</span><span class="p">(</span><span class="k">mut</span><span class="w"> </span><span class="n">f</span><span class="p">:</span><span class="w"> </span><span class="nc">F</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">f</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">call_fn_once</span><span class="o">&lt;</span><span class="n">F</span><span class="p">:</span><span class="w"> </span><span class="nb">FnOnce</span><span class="p">()</span><span class="o">&gt;</span><span class="p">(</span><span class="n">f</span><span class="p">:</span><span class="w"> </span><span class="nc">F</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">f</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">f_once</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">drop</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w"> </span><span class="c1">// 获取所有权 -&gt; FnOnce</span>
+<span class="w">    </span><span class="n">call_fn_once</span><span class="p">(</span><span class="n">f_once</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">f_mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 可变借用 -&gt; FnMut</span>
+<span class="w">    </span><span class="n">call_fn_mut</span><span class="p">(</span><span class="n">f_mut</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// 不可变借用 -&gt; Fn</span>
+<span class="w">    </span><span class="n">call_fn</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="66">66. 闭包如何捕获环境？有哪几种方式？</h3>
+<p><strong>答：</strong>
+闭包可以通过三种方式捕获变量，这三种方式对应 <code>Fn</code>、<code>FnMut</code> 和 <code>FnOnce</code> 三个 trait。</p>
+<ol>
+<li><strong><code>FnOnce</code></strong>: 闭包会获取变量的<strong>所有权</strong>。<code>Once</code> 表示它至少需要获取所有权，因此只能被调用一次。</li>
+<li><strong><code>FnMut</code></strong>: 闭包会<strong>可变地借用</strong>变量。<code>Mut</code> 表示它可以改变环境中的变量。</li>
+<li><strong><code>Fn</code></strong>: 闭包会<strong>不可变地借用</strong>变量。</li>
+</ol>
+<p>Rust 会根据闭包如何使用变量来自动推断它应该实现哪个 trait。</p>
+<hr />
+<h3 id="67-move">67. <code>move</code> 关键字在闭包中有什么用？</h3>
+<p><strong>答：</strong>
+在闭包前使用 <code>move</code> 关键字会强制闭包获取它所使用的所有环境变量的<strong>所有权</strong>。</p>
+<p>这在将闭包传递给新线程时非常有用，可以确保闭包所引用的数据在新线程中是有效的。</p>
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">thread</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">];</span>
+
+<span class="c1">// 如果没有 move，编译器会报错，因为它不知道 v 在新线程中能活多久</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">thread</span><span class="p">::</span><span class="n">spawn</span><span class="p">(</span><span class="k">move</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Here&#39;s a vector: {:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="n">handle</span><span class="p">.</span><span class="n">join</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</code></pre></div>
+<hr />
+<h3 id="68-iterators">68. 什么是迭代器 (Iterators)？</h3>
+<p><strong>答：</strong>
+迭代器是一种允许你对一个项的序列（比如集合中的元素）进行遍历的模式。Rust 的迭代器是<strong>惰性的 (lazy)</strong>，这意味着在你不主动消耗它之前，它不会产生任何效果。</p>
+<p>所有迭代器都实现了 <code>Iterator</code> trait，它只需要你实现一个 <code>next</code> 方法。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">];</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">v1_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v1</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span><span class="w"> </span><span class="c1">// iter() 创建一个迭代器</span>
+
+<span class="fm">assert_eq!</span><span class="p">(</span><span class="n">v1_iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">));</span>
+<span class="fm">assert_eq!</span><span class="p">(</span><span class="n">v1_iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="mi">2</span><span class="p">));</span>
+<span class="fm">assert_eq!</span><span class="p">(</span><span class="n">v1_iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="mi">3</span><span class="p">));</span>
+<span class="fm">assert_eq!</span><span class="p">(</span><span class="n">v1_iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span><span class="w"> </span><span class="nb">None</span><span class="p">);</span>
+</code></pre></div>
+<hr />
+<h3 id="69">69. 消耗型适配器和迭代器适配器有什么区别？</h3>
+<p><strong>答：</strong>
+- <strong>消耗型适配器 (Consuming Adaptors):</strong> 这类方法会调用 <code>next</code> 方法来消耗（使用掉）迭代器。例如 <code>sum()</code> 方法，它会遍历所有元素并计算总和，从而获得迭代器的所有权。<code>collect()</code> 是另一个例子。
+- <strong>迭代器适配器 (Iterator Adaptors):</strong> 这类方法会将一个迭代器转换成另一个迭代器。它们是惰性的，你需要链接一个消耗型适配器才能真正开始执行。<code>map()</code> 和 <code>filter()</code> 是最常见的迭代器适配器。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">v1</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">];</span>
+
+<span class="c1">// map 是迭代器适配器，collect 是消耗型适配器</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">v2</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">_</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v1</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">).</span><span class="n">collect</span><span class="p">();</span>
+
+<span class="fm">assert_eq!</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]);</span>
+</code></pre></div>
+<p>进阶示例：自定义迭代器
+<div class="highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Counter</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">current</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Counter</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span><span class="n">end</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">Self</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">Self</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">current</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="nb">Iterator</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Counter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">Item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">u32</span><span class="p">;</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="bp">Self</span><span class="p">::</span><span class="n">Item</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">current</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">end</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">current</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">current</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">None</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">sum</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Counter</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">).</span><span class="n">sum</span><span class="p">();</span>
+<span class="w">    </span><span class="fm">assert_eq!</span><span class="p">(</span><span class="n">sum</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="70-deref-trait">70. <code>Deref</code> trait 是如何工作的？</h3>
+<p><strong>答：</strong>
+<code>Deref</code> trait 允许你自定义解引用运算符 <code>*</code> 的行为。通过为类型实现 <code>Deref</code> trait，你可以让它像一个常规引用一样工作。</p>
+<p>当对一个实现了 <code>Deref</code> 的类型使用 <code>*</code> 时，Rust 实际上会调用 <code>*self.deref()</code>。这使得我们可以编写能够同时处理智能指针和普通引用的代码。这个特性被称为<strong>解引用强制多态 (Deref Coercions)</strong>。</p>
+<p>进阶示例：实现 <code>Deref</code> 让自定义类型像引用
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">ops</span><span class="p">::</span><span class="n">Deref</span><span class="p">;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+
+<span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">T</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">Self</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">MyBox</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Deref</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">Target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T</span><span class="p">;</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">deref</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Self</span><span class="p">::</span><span class="n">Target</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">&amp;</span><span class="bp">self</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Hello, {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyBox</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Rust&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">hello</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span><span class="w"> </span><span class="c1">// Deref 强制从 &amp;MyBox&lt;String&gt; -&gt; &amp;String -&gt; &amp;str</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="71-drop-trait">71. <code>Drop</code> trait 是如何工作的？</h3>
+<p><strong>答：</strong>
+<code>Drop</code> trait 允许你在一个值离开作用域时执行一些代码。它通常用于释放资源，比如文件句柄、网络连接或像 <code>Box&lt;T&gt;</code> 那样释放堆内存。</p>
+<p>你只需要实现 <code>drop</code> 方法。Rust 会在值需要被清理时自动调用它。你不能手动调用 <code>drop</code> 方法。</p>
+<hr />
+<p>进阶示例：<code>Drop</code> 资源释放与自定义清理
+<div class="highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Connection</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="nb">Drop</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Connection</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">drop</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">eprintln!</span><span class="p">(</span><span class="s">&quot;closing connection {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">id</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">_c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Connection</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 作用域结束时自动调用 drop</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="72-trait-object">72. 什么是 Trait Object？</h3>
+<p><strong>答：</strong>
+Trait object 允许你使用一个指向实现了某个 trait 的类型的指针。它是一种在运行时使用多态的方式。你可以创建一个包含不同类型值的 vector，只要这些值都实现了同一个 trait。</p>
+<p>Trait object 通过 <code>&amp;dyn Trait</code> 或 <code>Box&lt;dyn Trait&gt;</code> 的形式表示。<code>dyn</code> 关键字表明这是一个动态分发的 trait object。</p>
+<hr />
+<p>进阶示例：动态分发集合
+<div class="highlight"><pre><span></span><code><span class="k">trait</span><span class="w"> </span><span class="n">Animal</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">speak</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Dog</span><span class="p">;</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Cat</span><span class="p">;</span>
+<span class="k">impl</span><span class="w"> </span><span class="n">Animal</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Dog</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">speak</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;woof&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="k">impl</span><span class="w"> </span><span class="n">Animal</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Cat</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">speak</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;meow&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">zoo</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">Animal</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="nb">Box</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">Dog</span><span class="p">),</span><span class="w"> </span><span class="nb">Box</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cat</span><span class="p">)];</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">zoo</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">speak</span><span class="p">());</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="73">73. 动态分发和静态分发有什么区别？</h3>
+<p><strong>答：</strong>
+- <strong>静态分发 (Static Dispatch):</strong> 这是 Rust 默认的方式。当代码使用泛型和 trait bound 时，编译器在编译时会为每个具体类型生成一份专门的代码。这被称为“单态化 (monomorphization)”。它的优点是速度快，因为没有运行时开销。
+- <strong>动态分发 (Dynamic Dispatch):</strong> 这是通过 trait object (<code>dyn Trait</code>) 实现的。在运行时，程序会通过查找虚函数表（vtable）来确定应该调用哪个方法。它的优点是代码尺寸更小，并且允许你在一个集合中存储不同类型的值。缺点是存在轻微的运行时性能开销。</p>
+<hr />
+<p>示意图：静态分发与动态分发对比</p>
+<pre class="mermaid"><code>flowchart LR
+  A[泛型函数 T: Trait] --&gt;|编译期| M[单态化 多份机器码]
+  B[&amp;dyn Trait] --&gt;|运行期| V[vtable 查找]</code></pre>
+<h3 id="74-asref-asmut-trait">74. <code>AsRef</code> 和 <code>AsMut</code> trait 有什么用？</h3>
+<p><strong>答：</strong>
+<code>AsRef&lt;T&gt;</code> 和 <code>AsMut&lt;T&gt;</code> 是用于廉价的、引用到引用的转换的 trait。</p>
+<p>如果一个类型 <code>U</code> 实现了 <code>AsRef&lt;T&gt;</code>，意味着你可以通过调用 <code>.as_ref()</code> 方法，从 <code>&amp;U</code> 廉价地得到一个 <code>&amp;T</code>。这在编写希望接受多种不同但相关引用类型的函数时非常有用。例如，一个函数可以接受任何能被看作 <code>&amp;str</code> 的类型（如 <code>String</code>, <code>&amp;String</code>, <code>&amp;str</code>）。</p>
+<hr />
+<p>进阶示例：通用路径参数
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">path</span><span class="p">::</span><span class="n">Path</span><span class="p">;</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">read_all</span><span class="o">&lt;</span><span class="n">P</span><span class="p">:</span><span class="w"> </span><span class="nb">AsRef</span><span class="o">&lt;</span><span class="n">Path</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="w"> </span><span class="nc">P</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">as_ref</span><span class="p">();</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;reading {:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">read_all</span><span class="p">(</span><span class="s">&quot;/tmp/a.txt&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">read_all</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;/tmp/b.txt&quot;</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="75-newtype">75. 什么是 newtype 模式？</h3>
+<p><strong>答：</strong>
+Newtype 模式是在 Rust 中使用元组结构体来包装一个现有类型，从而创建一个新的、独特的类型。</p>
+<p><div class="highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Millimeters</span><span class="p">(</span><span class="kt">u32</span><span class="p">);</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Meters</span><span class="p">(</span><span class="kt">u32</span><span class="p">);</span>
+</code></pre></div>
+这样做的好处是：
+1.  <strong>类型安全:</strong> 你不能意外地将 <code>Millimeters</code> 类型的值和 <code>Meters</code> 类型的值混用，即使它们内部都是 <code>u32</code>。
+2.  <strong>抽象:</strong> 你可以为这个新类型实现它自己独有的方法和 trait，而不用去修改原始类型。</p>
+<p>进阶示例：为 newtype 实现外部 trait
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">fmt</span><span class="p">::{</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">Display</span><span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Millimeters</span><span class="p">(</span><span class="kt">u32</span><span class="p">);</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Display</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Millimeters</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">fmt</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">fmt</span><span class="p">::</span><span class="n">Formatter</span><span class="o">&lt;&#39;</span><span class="nb">_</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">fmt</span><span class="p">::</span><span class="nb">Result</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">write!</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{}mm&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      
+        <script src="../assets/mermaid-init.js"></script>
+      
+    
+  </body>
+</html>

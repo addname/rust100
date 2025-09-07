@@ -1,0 +1,1238 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../chapter2_ownership/">
+      
+      
+        <link rel="next" href="../chapter4_advanced/">
+      
+      
+      <link rel="icon" href="../assets/螃蟹.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>第三章：复合类型与集合 - Rust 100 问</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="Rust 100 问" class="md-header__button md-logo" aria-label="Rust 100 问" data-md-component="logo">
+      
+  <img src="../assets/螃蟹.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Rust 100 问
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第三章：复合类型与集合
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Rust 100 问" class="md-nav__button md-logo" aria-label="Rust 100 问" data-md-component="logo">
+      
+  <img src="../assets/螃蟹.png" alt="logo">
+
+    </a>
+    Rust 100 问
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    首页
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter1_basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第一章：入门与基础
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter2_ownership/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第二章：核心概念：所有权与生命周期
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    第三章：复合类型与集合
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    第三章：复合类型与集合
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#41-struct" class="md-nav__link">
+    <span class="md-ellipsis">
+      41. 什么是结构体 (Struct)？如何定义？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      42. 如何为结构体实现方法 (Method)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#43-associated-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      43. 什么是关联函数 (Associated Function)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#44-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      44. 什么是枚举 (Enum)？它有什么优势？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#45-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      45. Option 枚举是什么？为什么它很重要？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#46-match" class="md-nav__link">
+    <span class="md-ellipsis">
+      46. match 控制流运算符是做什么用的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#47-if-let" class="md-nav__link">
+    <span class="md-ellipsis">
+      47. if let 语法是什么？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#48-vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      48. 什么是 Vector？如何使用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#49-vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      49. 如何遍历 Vector 中的元素？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#50-rust-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      50. Rust 中的字符串 (String) 是如何实现的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#51-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      51. 如何创建和更新一个 String？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      52. 为什么不能通过索引访问 String 的字符？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#53-hashmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      53. 什么是 HashMap？如何使用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#54-hashmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      54. HashMap 如何处理键的所有权？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#55-hashmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      55. 如何在 HashMap 中只在键不存在时插入值？
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter4_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第四章：高级特性
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter5_concurrency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第五章：并发与异步
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter6_ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第六章：项目与生态
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chapter7_engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    第七章：工程与进阶专题
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    关于
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#41-struct" class="md-nav__link">
+    <span class="md-ellipsis">
+      41. 什么是结构体 (Struct)？如何定义？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      42. 如何为结构体实现方法 (Method)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#43-associated-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      43. 什么是关联函数 (Associated Function)？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#44-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      44. 什么是枚举 (Enum)？它有什么优势？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#45-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      45. Option 枚举是什么？为什么它很重要？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#46-match" class="md-nav__link">
+    <span class="md-ellipsis">
+      46. match 控制流运算符是做什么用的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#47-if-let" class="md-nav__link">
+    <span class="md-ellipsis">
+      47. if let 语法是什么？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#48-vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      48. 什么是 Vector？如何使用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#49-vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      49. 如何遍历 Vector 中的元素？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#50-rust-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      50. Rust 中的字符串 (String) 是如何实现的？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#51-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      51. 如何创建和更新一个 String？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      52. 为什么不能通过索引访问 String 的字符？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#53-hashmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      53. 什么是 HashMap？如何使用？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#54-hashmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      54. HashMap 如何处理键的所有权？
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#55-hashmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      55. 如何在 HashMap 中只在键不存在时插入值？
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">第三章：复合类型与集合</h1>
+<p>本章将介绍 Rust 中组织数据的两种重要方式：结构体（structs）和枚举（enums）。我们还将深入探讨标准库提供的一些非常有用的集合类型，如 Vector、String 和 HashMap。</p>
+<hr />
+<p>示意图：类型与集合关系</p>
+<pre class="mermaid"><code>flowchart LR
+  S1[Struct] --&gt; V[Vec]
+  E1[Enum] --&gt; V
+  V --&gt; STR[String]
+  STR --&gt; S[&amp;str]
+  STR --&gt; H[HashMap]</code></pre>
+<h3 id="41-struct">41. 什么是结构体 (Struct)？如何定义？</h3>
+<p><strong>答：</strong>
+结构体（struct）是一种自定义数据类型，允许你将多个相关的值组合在一起并命名。它类似于其他语言中的对象或记录。有三种类型的结构体：</p>
+<ol>
+<li><strong>普通结构体 (Struct):</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">User</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">active</span><span class="p">:</span><span class="w"> </span><span class="kt">bool</span><span class="p">,</span>
+<span class="w">    </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sign_in_count</span><span class="p">:</span><span class="w"> </span><span class="kt">u64</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1">// 创建实例</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">user1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;someone@example.com&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;someusername123&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">active</span><span class="p">:</span><span class="w"> </span><span class="nc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sign_in_count</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>示意图：结构体与字段</p>
+<pre class="mermaid"><code>flowchart LR
+  User[User] --&gt; active[active: bool]
+  User --&gt; username[username: String]
+  User --&gt; email[email: String]
+  User --&gt; sign_in_count[sign_in_count: u64]</code></pre>
+<ol>
+<li><strong>元组结构体 (Tuple Struct):</strong> 当你想给整个元组一个名字，但不需要给每个字段命名时使用。</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Color</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="kt">i32</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">black</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Color</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</code></pre></div>
+<ol>
+<li><strong>单元结构体 (Unit-Like Struct):</strong> 没有任何字段，当你需要在某个类型上实现 trait 但又不需要存储数据时很有用。</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">AlwaysEqual</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">subject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AlwaysEqual</span><span class="p">;</span>
+</code></pre></div>
+<p>进阶示例：结构体初始化简写、更新语法与调试输出
+<div class="highlight"><pre><span></span><code><span class="cp">#[derive(Debug)]</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">User</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">active</span><span class="p">:</span><span class="w"> </span><span class="kt">bool</span><span class="p">,</span>
+<span class="w">    </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sign_in_count</span><span class="p">:</span><span class="w"> </span><span class="kt">u64</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;alice&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;alice@example.com&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 字段初始化简写（变量名与字段名相同）</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">user1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">active</span><span class="p">:</span><span class="w"> </span><span class="nc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="n">username</span><span class="p">,</span>
+<span class="w">        </span><span class="n">email</span><span class="p">,</span>
+<span class="w">        </span><span class="n">sign_in_count</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="c1">// 更新语法（从 user1 拷贝剩余字段；被移动的字段在 user1 上失效）</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">user2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;alice@work.com&quot;</span><span class="p">),</span>
+<span class="w">        </span><span class="o">..</span><span class="n">user1</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="c1">// user1.username 已被移动，不能再使用；但 user1.active 仍可用</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;user2 = {:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">user2</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="42-method">42. 如何为结构体实现方法 (Method)？</h3>
+<p><strong>答：</strong>
+方法与函数类似，但它们在结构体（或枚举、trait）的上下文中被定义，并且它们的第一个参数总是 <code>self</code>，代表调用该方法的结构体实例。方法在 <code>impl</code> 块中定义。</p>
+<div class="highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Rectangle</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">width</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="p">,</span>
+<span class="w">    </span><span class="n">height</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Rectangle</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// `&amp;self` 是 self: &amp;Self 的缩写</span>
+<span class="w">    </span><span class="c1">// 这是一个不可变借用</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">area</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="bp">self</span><span class="p">.</span><span class="n">width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">height</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// 这是一个可变借用</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">set_width</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="bp">self</span><span class="p">.</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">width</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">rect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rectangle</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">width</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="p">};</span>
+<span class="fm">println!</span><span class="p">(</span><span class="s">&quot;The area is {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">rect</span><span class="p">.</span><span class="n">area</span><span class="p">());</span>
+<span class="n">rect</span><span class="p">.</span><span class="n">set_width</span><span class="p">(</span><span class="mi">35</span><span class="p">);</span>
+</code></pre></div>
+<hr />
+<h3 id="43-associated-function">43. 什么是关联函数 (Associated Function)？</h3>
+<p><strong>答：</strong>
+关联函数是定义在 <code>impl</code> 块中但<strong>不</strong>以 <code>self</code> 作为第一个参数的函数。它与结构体关联，但不是实例的方法。其他语言中通常称之为“静态方法”。</p>
+<p>创建结构体实例的构造函数是关联函数的常见用法，例如 <code>String::from</code>。</p>
+<div class="highlight"><pre><span></span><code><span class="k">impl</span><span class="w"> </span><span class="n">Rectangle</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 这是一个关联函数，通常用作构造函数</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="n">size</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">Self</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="bp">Self</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">width</span><span class="p">:</span><span class="w"> </span><span class="nc">size</span><span class="p">,</span>
+<span class="w">            </span><span class="n">height</span><span class="p">:</span><span class="w"> </span><span class="nc">size</span><span class="p">,</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 通过 `::` 语法调用</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">sq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rectangle</span><span class="p">::</span><span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</code></pre></div>
+<hr />
+<h3 id="44-enum">44. 什么是枚举 (Enum)？它有什么优势？</h3>
+<p><strong>答：</strong>
+枚举（enum）允许你定义一个可以拥有数个变体（variants）之一的类型。它的强大之处在于，你可以将数据直接附加到枚举的每个变体中。</p>
+<div class="highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nc">Message</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Quit</span><span class="p">,</span><span class="w"> </span><span class="c1">// 没有关联数据</span>
+<span class="w">    </span><span class="n">Move</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// 关联一个匿名结构体</span>
+<span class="w">    </span><span class="n">Write</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w"> </span><span class="c1">// 关联一个 String</span>
+<span class="w">    </span><span class="n">ChangeColor</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="kt">i32</span><span class="p">),</span><span class="w"> </span><span class="c1">// 关联三个 i32</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>示意图：Message 变体</p>
+<p><pre class="mermaid"><code>flowchart LR
+  Message[Message] --&gt; Quit
+  Message --&gt; Move
+  Message --&gt; Write
+  Message --&gt; ChangeColor</code></pre>
+优势在于，一个 <code>Message</code> 类型的值可以是以上四种变体中的<strong>任何一种</strong>。这允许我们在一个类型中编码多种状态或值的可能性，并且编译器会确保你处理了所有可能的情况。</p>
+<p>进阶示例：为枚举实现方法并匹配
+<div class="highlight"><pre><span></span><code><span class="cp">#[derive(Debug)]</span>
+<span class="k">enum</span><span class="w"> </span><span class="nc">Message</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Quit</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Move</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="n">Write</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span>
+<span class="w">    </span><span class="n">ChangeColor</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="kt">i32</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Message</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="bp">self</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">Message</span><span class="p">::</span><span class="n">Quit</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;quit&quot;</span><span class="p">),</span>
+<span class="w">            </span><span class="n">Message</span><span class="p">::</span><span class="n">Move</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;move to ({}, {})&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">),</span>
+<span class="w">            </span><span class="n">Message</span><span class="p">::</span><span class="n">Write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;write: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">            </span><span class="n">Message</span><span class="p">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;color: ({}, {}, {})&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">),</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Message</span><span class="p">::</span><span class="n">Move</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">call</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="45-option">45. <code>Option</code> 枚举是什么？为什么它很重要？</h3>
+<p><strong>答：</strong>
+<code>Option&lt;T&gt;</code> 是标准库中一个非常重要的枚举，它用于处理一个值“可能为空”的情况。在很多其他语言中，这由 <code>null</code> 或 <code>nil</code> 来表示，但 <code>null</code> 是一个臭名昭著的 bug 之源。</p>
+<p>Rust 没有 <code>null</code>，而是使用 <code>Option&lt;T&gt;</code>：
+<div class="highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">None</span><span class="p">,</span><span class="w"> </span><span class="c1">// 表示没有值</span>
+<span class="w">    </span><span class="nb">Some</span><span class="p">(</span><span class="n">T</span><span class="p">),</span><span class="w"> </span><span class="c1">// 表示有一个 T 类型的值</span>
+<span class="p">}</span>
+</code></pre></div>
+<code>Option&lt;T&gt;</code> 让你必须在编译时就处理值不存在的情况，从而避免了在运行时出现“空指针”错误。这使得代码更安全、更健壮。</p>
+<hr />
+<h3 id="46-match">46. <code>match</code> 控制流运算符是做什么用的？</h3>
+<p><strong>答：</strong>
+<code>match</code> 是一个强大的控制流运算符，它允许一个值与一系列的模式（patterns）进行比较，并根据匹配的模式执行相应的代码。可以把它想象成一个“超级 <code>if</code>”。</p>
+<p><code>match</code> 的一个关键特性是它是<strong>穷尽的 (exhaustive)</strong>。你必须为所有可能的值编写分支，否则编译器会报错。这与 <code>Option</code> 和其他枚举配合使用时尤其强大。</p>
+<div class="highlight"><pre><span></span><code><span class="k">fn</span><span class="w"> </span><span class="nf">plus_one</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nb">None</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">None</span><span class="p">,</span>
+<span class="w">        </span><span class="nb">Some</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>示意图：Option 匹配流程</p>
+<pre class="mermaid"><code>flowchart LR
+  X[Option] --&gt; S[Some branch]
+  X --&gt; N[None branch]</code></pre>
+<hr />
+<h3 id="47-if-let">47. <code>if let</code> 语法是什么？</h3>
+<p><strong>答：</strong>
+<code>if let</code> 是一种更简洁的语法，用于处理只关心 <code>match</code> 中某一个分支的情况。它不要求穷尽所有可能。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">config_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="mi">3</span><span class="k">u8</span><span class="p">);</span>
+
+<span class="c1">// 使用 match</span>
+<span class="k">match</span><span class="w"> </span><span class="n">config_max</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">Some</span><span class="p">(</span><span class="n">max</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;The maximum is configured to be {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p">),</span>
+<span class="w">    </span><span class="n">_</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="c1">// 对于不关心的分支，必须用 `_` 来处理</span>
+<span class="p">}</span>
+
+<span class="c1">// 使用 if let，更简洁</span>
+<span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">max</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_max</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;The maximum is configured to be {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h3 id="48-vector">48. 什么是 Vector？如何使用？</h3>
+<p><strong>答：</strong>
+<code>Vec&lt;T&gt;</code>，通常称为 vector，是一个可增长的、在堆上分配的数组类型。它只能存储相同类型 <code>T</code> 的值。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 创建一个新的 vector</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">v</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Vec</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+
+<span class="c1">// 使用 `vec!` 宏创建并初始化</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">];</span>
+
+<span class="c1">// 添加元素</span>
+<span class="n">v</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+<span class="n">v</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+
+<span class="c1">// 读取元素</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">third</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="kt">i32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">v2</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w"> </span><span class="c1">// 通过索引访问，如果越界会 panic</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">fourth</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;&amp;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// 使用 get，返回 Option，更安全</span>
+</code></pre></div>
+<p>示意图：Vec 扩容流程（概念）</p>
+<pre class="mermaid"><code>flowchart LR
+  A[cap] --&gt;|push 超限| R[realloc]
+  R --&gt; C[copy old]
+  C --&gt; U[update ptr/cap]</code></pre>
+<p>进阶示例：容量、插入删除、排序、去重与保留
+<div class="highlight"><pre><span></span><code><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Vec</span><span class="p">::</span><span class="n">with_capacity</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+<span class="w">    </span><span class="n">v</span><span class="p">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">]);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;len={}, cap={}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">len</span><span class="p">(),</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">capacity</span><span class="p">());</span>
+
+<span class="w">    </span><span class="c1">// 插入与删除</span>
+<span class="w">    </span><span class="n">v</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span><span class="w"> </span><span class="c1">// 在索引1插入</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">removed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// 移除索引0元素</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;removed={}, v={:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">removed</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 排序与去重（需要可排序元素）</span>
+<span class="w">    </span><span class="n">v</span><span class="p">.</span><span class="n">sort</span><span class="p">();</span>
+<span class="w">    </span><span class="n">v</span><span class="p">.</span><span class="n">dedup</span><span class="p">();</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;sorted+dedup: {:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 过滤保留</span>
+<span class="w">    </span><span class="n">v</span><span class="p">.</span><span class="n">retain</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;保留奇数: {:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 迭代转换</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">doubled</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">_</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">).</span><span class="n">collect</span><span class="p">();</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;翻倍: {:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">doubled</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="49-vector">49. 如何遍历 Vector 中的元素？</h3>
+<p><strong>答：</strong>
+使用 <code>for</code> 循环。你可以选择不可变地遍历、可变地遍历或获取所有权。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">57</span><span class="p">];</span>
+
+<span class="c1">// 不可变遍历</span>
+<span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="o">&amp;</span><span class="n">v</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">v_mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">57</span><span class="p">];</span>
+<span class="c1">// 可变遍历</span>
+<span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">v_mut</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">*</span><span class="n">i</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">50</span><span class="p">;</span><span class="w"> </span><span class="c1">// 使用解引用运算符 `*` 来修改值</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h3 id="50-rust-string">50. Rust 中的字符串 (String) 是如何实现的？</h3>
+<p><strong>答：</strong>
+<code>String</code> 类型实际上是 <code>Vec&lt;u8&gt;</code> 的一个包装。它是一个在堆上分配、可增长、可变的 UTF-8 编码的字节序列。</p>
+<ul>
+<li><code>String</code> 拥有其数据的所有权。</li>
+<li><code>&amp;str</code>（字符串切片）是对 <code>String</code> 中数据的借用。</li>
+</ul>
+<hr />
+<h3 id="51-string">51. 如何创建和更新一个 <code>String</code>？</h3>
+<p><strong>答：</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// 创建一个空 String</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+
+<span class="c1">// 从字符串字面量创建</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">s1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;initial contents&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">();</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;initial contents&quot;</span><span class="p">);</span>
+
+<span class="c1">// 更新 String</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">s3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">);</span>
+<span class="n">s3</span><span class="p">.</span><span class="n">push_str</span><span class="p">(</span><span class="s">&quot;bar&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// 追加一个 &amp;str</span>
+<span class="n">s3</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="sc">&#39;!&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// 追加一个字符</span>
+
+<span class="c1">// 使用 `+` 运算符连接（会获得 s3 的所有权）</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">s4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s1</span><span class="p">;</span><span class="w"> </span>
+
+<span class="c1">// 使用 `format!` 宏（不会获得任何参数的所有权）</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">s5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">format!</span><span class="p">(</span><span class="s">&quot;{}-{}-{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">s2</span><span class="p">,</span><span class="w"> </span><span class="n">s1</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">);</span>
+</code></pre></div></p>
+<p>进阶示例：遍历字符与字节、查找与替换、截断与清理
+<div class="highlight"><pre><span></span><code><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;héllo, 世界 👋&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 按字符遍历（Unicode 标量）</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">chars</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">print!</span><span class="p">(</span><span class="s">&quot;[{}]&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ch</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// 按字节遍历</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">bytes</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">print!</span><span class="p">(</span><span class="s">&quot;{} &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// 查找与替换</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="sc">&#39;世&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;&#39;世&#39; 出现在字节位置 {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pos</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">replaced</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;hé&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;he&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;替换后: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">replaced</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 截断（注意 UTF-8 边界）</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">truncate</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span><span class="w"> </span><span class="c1">// 以字节为单位，需确保在字符边界</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;截断后: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 清空</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;清空后长度: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">len</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="52-string">52. 为什么不能通过索引访问 <code>String</code> 的字符？</h3>
+<p><strong>答：</strong>
+因为 Rust 的 <code>String</code> 是 UTF-8 编码的。在 UTF-8 中，一个字符可能占用 1 到 4 个字节。因此，<code>O(1)</code> 时间复杂度的索引操作无法保证返回一个有效的字符。</p>
+<p>例如，<code>"नमस्ते"</code> 这个字符串，从字节上看是 <code>[224, 164, ...]</code>，<code>&amp;s[0]</code> 并不是一个完整的字符 <code>'न'</code>。</p>
+<p>如果你确实需要遍历字符，应该使用 <code>.chars()</code> 方法。</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s">&quot;Зд&quot;</span><span class="p">.</span><span class="n">chars</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// 会正确打印 &#39;З&#39; 和 &#39;д&#39;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>示意图：String/Chars/Bytes 关系</p>
+<pre class="mermaid"><code>flowchart LR
+  STR[String] --&gt; CH[chars]
+  STR --&gt; BY[bytes]</code></pre>
+<hr />
+<h3 id="53-hashmap">53. 什么是 HashMap？如何使用？</h3>
+<p><strong>答：</strong>
+<code>HashMap&lt;K, V&gt;</code> 用于存储键（类型 <code>K</code>）和值（类型 <code>V</code>）之间的映射关系。它通过哈希函数来实现，可以提供平均 <code>O(1)</code> 时间复杂度的访问。</p>
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">collections</span><span class="p">::</span><span class="n">HashMap</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">scores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HashMap</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+
+<span class="c1">// 插入键值对</span>
+<span class="n">scores</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Blue&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+<span class="n">scores</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Yellow&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">50</span><span class="p">);</span>
+
+<span class="c1">// 获取值</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">team_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Blue&quot;</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">score</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scores</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">team_name</span><span class="p">).</span><span class="n">copied</span><span class="p">().</span><span class="n">unwrap_or</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// get 返回 Option</span>
+
+<span class="c1">// 遍历</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="o">&amp;</span><span class="n">scores</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;{}: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>进阶示例：单词计数与 <code>or_insert_with</code>
+<div class="highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">collections</span><span class="p">::</span><span class="n">HashMap</span><span class="p">;</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;hello world wonderful world&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">counts</span><span class="p">:</span><span class="w"> </span><span class="nc">HashMap</span><span class="o">&lt;&amp;</span><span class="kt">str</span><span class="p">,</span><span class="w"> </span><span class="kt">usize</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HashMap</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">word</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">text</span><span class="p">.</span><span class="n">split_whitespace</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="o">*</span><span class="n">counts</span><span class="p">.</span><span class="n">entry</span><span class="p">(</span><span class="n">word</span><span class="p">).</span><span class="n">or_insert</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;计数: {:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">counts</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 惰性初始化开销较大的默认值</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">cache</span><span class="p">:</span><span class="w"> </span><span class="nc">HashMap</span><span class="o">&lt;</span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="nb">String</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HashMap</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;config&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cache</span><span class="p">.</span><span class="n">entry</span><span class="p">(</span><span class="n">key</span><span class="p">).</span><span class="n">or_insert_with</span><span class="p">(</span><span class="o">||</span><span class="w"> </span><span class="n">expensive_load</span><span class="p">());</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;加载值: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">expensive_load</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 模拟耗时计算/IO</span>
+<span class="w">    </span><span class="s">&quot;default&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="54-hashmap">54. HashMap 如何处理键的所有权？</h3>
+<p><strong>答：</strong>
+对于实现了 <code>Copy</code> trait 的类型（如 <code>i32</code>），键的值会被复制到 <code>HashMap</code> 中。
+对于拥有所有权的类型（如 <code>String</code>），值的所有权将被<strong>移动</strong>到 <code>HashMap</code> 中。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">field_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Favorite color&quot;</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">field_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Blue&quot;</span><span class="p">);</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HashMap</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+<span class="n">map</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span><span class="w"> </span><span class="n">field_value</span><span class="p">);</span>
+
+<span class="c1">// field_name 和 field_value 在这里不再有效，因为所有权被移动了</span>
+<span class="c1">// println!(&quot;{}&quot;, field_name); // 编译错误！</span>
+</code></pre></div>
+<hr />
+<h3 id="55-hashmap">55. 如何在 HashMap 中只在键不存在时插入值？</h3>
+<p><strong>答：</strong>
+使用 <code>entry</code> API，它返回一个名为 <code>Entry</code> 的枚举。<code>or_insert</code> 方法会在键不存在时插入给定的值，并返回一个可变的引用。</p>
+<p>这是一种非常高效和简洁的处理方式，避免了先检查再插入的两步操作。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">scores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HashMap</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+<span class="n">scores</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Blue&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+
+<span class="c1">// &quot;Blue&quot; 键已存在，什么都不做</span>
+<span class="n">scores</span><span class="p">.</span><span class="n">entry</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Blue&quot;</span><span class="p">)).</span><span class="n">or_insert</span><span class="p">(</span><span class="mi">50</span><span class="p">);</span>
+
+<span class="c1">// &quot;Red&quot; 键不存在，插入 30</span>
+<span class="n">scores</span><span class="p">.</span><span class="n">entry</span><span class="p">(</span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Red&quot;</span><span class="p">)).</span><span class="n">or_insert</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
+
+<span class="fm">println!</span><span class="p">(</span><span class="s">&quot;{:?}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">scores</span><span class="p">);</span><span class="w"> </span><span class="c1">// {&quot;Blue&quot;: 10, &quot;Red&quot;: 30}</span>
+</code></pre></div>
+<p>示意图：HashMap entry API 分支</p>
+<pre class="mermaid"><code>flowchart LR
+  Q[entry] --&gt; E1[Occupied]
+  Q --&gt; E2[Vacant]
+  E1 --&gt; OR[or_insert -&gt; &amp;mut V]
+  E2 --&gt; INS[insert default -&gt; &amp;mut V]</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      
+        <script src="../assets/mermaid-init.js"></script>
+      
+    
+  </body>
+</html>
